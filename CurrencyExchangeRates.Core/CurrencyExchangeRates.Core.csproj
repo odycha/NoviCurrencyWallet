@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CurrencyExchangeRates.Data\CurrencyExchangeRates.Data.csproj" />
+    <ProjectReference Include="..\CurrencyExchangeRates.Gateway\CurrencyExchangeRates.Gateway.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Contracts\" />
+    <Folder Include="Models\" />
+    <Folder Include="Repository\" />
+  </ItemGroup>
+
+</Project>
