@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CurrencyExchangeRates.Core\CurrencyExchangeRates.Core.csproj" />
+    <ProjectReference Include="..\CurrencyExchangeRates.Jobs\CurrencyExchangeRates.Jobs.csproj" />
   </ItemGroup>
 
 </Project>

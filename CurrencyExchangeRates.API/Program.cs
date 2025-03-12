@@ -1,6 +1,8 @@
-
+using CurrencyExchangeRates.Gateway.Configurations;
+using CurrencyExchangeRates.Core.Configurations.Options;
 using CurrencyExchangeRates.Gateway.Contracts;
 using CurrencyExchangeRates.Gateway.Services;
+using CurrencyExchangeRates.Jobs;
 
 namespace CurrencyExchangeRates.API
 {
@@ -17,6 +19,13 @@ namespace CurrencyExchangeRates.API
 			builder.Services.AddEndpointsApiExplorer();
 			builder.Services.AddSwaggerGen();
 
+			//Call the job method from the API
+			//I ADDED PROJECT REFERENCE TO THE JOBS PROJECT
+			builder.Services.AddInfrastructure();
+
+			//bind the settings classes to appsettings.json
+			builder.Services.Configure<EcbGatewayOptions>(builder.Configuration.GetSection("EcbGateway"));
+			builder.Services.Configure<CurrencyRateJobOptions>(builder.Configuration.GetSection("CurrencyRateJob"));
 
 			//Register the EcbGatewayService
 			builder.Services.AddHttpClient("EcbClient", client =>

@@ -1,5 +1,7 @@
-﻿using CurrencyExchangeRates.Gateway.Contracts;
+﻿using CurrencyExchangeRates.Gateway.Configurations;
+using CurrencyExchangeRates.Gateway.Contracts;
 using CurrencyExchangeRates.Gateway.Models;
+using Microsoft.Extensions.Options;
 using System.Xml.Serialization;
 
 namespace CurrencyExchangeRates.Gateway.Services
@@ -8,14 +10,16 @@ namespace CurrencyExchangeRates.Gateway.Services
 	{
 
 		private readonly HttpClient _httpClient;
-		public EcbGatewayService(IHttpClientFactory httpClientFactory)
+		private readonly EcbGatewayOptions _options;
+		public EcbGatewayService(IHttpClientFactory httpClientFactory, IOptions<EcbGatewayOptions> options)
 		{
 			_httpClient = httpClientFactory.CreateClient("EcbClient");
+			_options = options.Value;
 		}
 
 		public async Task<EcbCube> GetExchangeRatesAsync()
 		{
-			const string url = "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml";
+			var url = _options.BaseUrl;
 			var response = await _httpClient.GetAsync(url);
 
 			if (!response.IsSuccessStatusCode)
