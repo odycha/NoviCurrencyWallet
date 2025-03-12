@@ -1,4 +1,4 @@
-namespace CurrencyExchangeRates.API
+namespace NoviCurrencyWallet.API
 {
 	public class WeatherForecast
 	{

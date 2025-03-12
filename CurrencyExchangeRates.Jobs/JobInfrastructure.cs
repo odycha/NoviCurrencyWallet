@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Quartz;
 
-namespace CurrencyExchangeRates.Jobs;
+namespace NoviCurrencyWallet.Jobs;
 
 //using a static class which allows me to register the services from the Jobs project
 public static class JobInfrastructure

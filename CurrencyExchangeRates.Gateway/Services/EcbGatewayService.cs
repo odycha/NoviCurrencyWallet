@@ -1,10 +1,10 @@
-﻿using CurrencyExchangeRates.Gateway.Configurations;
-using CurrencyExchangeRates.Gateway.Contracts;
-using CurrencyExchangeRates.Gateway.Models;
+﻿using NoviCurrencyWallet.Gateway.Configurations;
+using NoviCurrencyWallet.Gateway.Contracts;
+using NoviCurrencyWallet.Gateway.Models;
 using Microsoft.Extensions.Options;
 using System.Xml.Serialization;
 
-namespace CurrencyExchangeRates.Gateway.Services
+namespace NoviCurrencyWallet.Gateway.Services
 {
 	public class EcbGatewayService : IEcbGatewayService
 	{

@@ -1,6 +1,6 @@
 ﻿using System.Xml.Serialization;
 
-namespace CurrencyExchangeRates.Gateway.Models
+namespace NoviCurrencyWallet.Gateway.Models
 {
 
 	// Root element of the XML document

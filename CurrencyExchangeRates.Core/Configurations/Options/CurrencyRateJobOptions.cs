@@ -1,4 +1,4 @@
-﻿namespace CurrencyExchangeRates.Core.Configurations.Options;
+﻿namespace NoviCurrencyWallet.Core.Configurations.Options;
 
 public class CurrencyRateJobOptions
 {

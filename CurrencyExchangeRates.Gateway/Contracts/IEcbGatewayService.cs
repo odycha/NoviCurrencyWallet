@@ -1,7 +1,7 @@
-﻿using CurrencyExchangeRates.Gateway.Models;
+﻿using NoviCurrencyWallet.Gateway.Models;
 using System.Reflection.PortableExecutable;
 
-namespace CurrencyExchangeRates.Gateway.Contracts
+namespace NoviCurrencyWallet.Gateway.Contracts
 {
 	public interface IEcbGatewayService
 	{

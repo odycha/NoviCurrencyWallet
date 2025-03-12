@@ -1,4 +1,4 @@
-﻿namespace CurrencyExchangeRates.Gateway.Configurations;
+﻿namespace NoviCurrencyWallet.Gateway.Configurations;
 
 public class EcbGatewayOptions
 {

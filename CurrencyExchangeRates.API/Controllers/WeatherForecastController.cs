@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace CurrencyExchangeRates.API.Controllers
+namespace NoviCurrencyWallet.API.Controllers
 {
 	[ApiController]
 	[Route("[controller]")]

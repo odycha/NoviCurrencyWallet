@@ -1,10 +1,10 @@
-using CurrencyExchangeRates.Gateway.Configurations;
-using CurrencyExchangeRates.Core.Configurations.Options;
-using CurrencyExchangeRates.Gateway.Contracts;
-using CurrencyExchangeRates.Gateway.Services;
-using CurrencyExchangeRates.Jobs;
+using NoviCurrencyWallet.Gateway.Configurations;
+using NoviCurrencyWallet.Core.Configurations.Options;
+using NoviCurrencyWallet.Gateway.Contracts;
+using NoviCurrencyWallet.Gateway.Services;
+using NoviCurrencyWallet.Jobs;
 
-namespace CurrencyExchangeRates.API
+namespace NoviCurrencyWallet.API
 {
 	public class Program
 	{

@@ -3,17 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35312.102
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CurrencyExchangeRates.API", "CurrencyExchangeRates.API\CurrencyExchangeRates.API.csproj", "{854A40B9-0E1D-45FB-9412-EBB1751137EF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoviCurrencyWallet.API", "CurrencyExchangeRates.API\NoviCurrencyWallet.API.csproj", "{854A40B9-0E1D-45FB-9412-EBB1751137EF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CurrencyExchangeRates.Gateway", "CurrencyExchangeRates.Gateway\CurrencyExchangeRates.Gateway.csproj", "{3ECDA242-F917-4940-AADA-42875A22F8AE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoviCurrencyWallet.Gateway", "CurrencyExchangeRates.Gateway\NoviCurrencyWallet.Gateway.csproj", "{3ECDA242-F917-4940-AADA-42875A22F8AE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CurrencyExchangeRates.Core", "CurrencyExchangeRates.Core\CurrencyExchangeRates.Core.csproj", "{E01CE625-21D4-40B3-B058-7233CFFF3D98}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoviCurrencyWallet.Core", "CurrencyExchangeRates.Core\NoviCurrencyWallet.Core.csproj", "{E01CE625-21D4-40B3-B058-7233CFFF3D98}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CurrencyExchangeRates.Data", "CurrencyExchangeRates.Data\CurrencyExchangeRates.Data.csproj", "{3F015D59-61BC-435F-9D87-3922942A7C2D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoviCurrencyWallet.Data", "CurrencyExchangeRates.Data\NoviCurrencyWallet.Data.csproj", "{3F015D59-61BC-435F-9D87-3922942A7C2D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CurrencyExchangeRates.Jobs", "CurrencyExchangeRates.Jobs\CurrencyExchangeRates.Jobs.csproj", "{9475A06B-541F-4860-8EA8-4FF38A43027E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoviCurrencyWallet.Jobs", "CurrencyExchangeRates.Jobs\NoviCurrencyWallet.Jobs.csproj", "{9475A06B-541F-4860-8EA8-4FF38A43027E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CurrencyExchangeRates.Tests", "CurrencyExchangeRates.Tests\CurrencyExchangeRates.Tests.csproj", "{6316EA0F-57E6-400E-9AA8-C2D92A176B2F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoviCurrencyWallet.Tests", "CurrencyExchangeRates.Tests\NoviCurrencyWallet.Tests.csproj", "{6316EA0F-57E6-400E-9AA8-C2D92A176B2F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

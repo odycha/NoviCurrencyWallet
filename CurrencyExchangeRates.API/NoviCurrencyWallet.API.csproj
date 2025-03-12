@@ -11,8 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CurrencyExchangeRates.Core\CurrencyExchangeRates.Core.csproj" />
-    <ProjectReference Include="..\CurrencyExchangeRates.Jobs\CurrencyExchangeRates.Jobs.csproj" />
+    <ProjectReference Include="..\CurrencyExchangeRates.Core\NoviCurrencyWallet.Core.csproj" />
+    <ProjectReference Include="..\CurrencyExchangeRates.Jobs\NoviCurrencyWallet.Jobs.csproj" />
   </ItemGroup>
 
 </Project>
