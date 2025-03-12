@@ -6,6 +6,9 @@ using NoviCurrencyWallet.Jobs;
 using Microsoft.EntityFrameworkCore;
 using NoviCurrencyWallet.Data;
 using Microsoft.Extensions.Options;
+using NoviCurrencyWallet.Core.Configurations;
+using NoviCurrencyWallet.Core.Contracts;
+using NoviCurrencyWallet.Core.Repository;
 
 namespace NoviCurrencyWallet.API;
 
@@ -15,8 +18,7 @@ public class Program
 	{
 		var builder = WebApplication.CreateBuilder(args);
 
-		// Bind configuration using Options Pattern
-		builder.Services.Configure<DatabaseOptions>(builder.Configuration.GetSection("ConnectionStrings"));
+		var connectionString = builder.Configuration.GetConnectionString("NoviCurrencyWalletDbConnectionString");
 
 		// Bind the settings classes to appsettings.json (Fix 2: Ensure the right section is used)
 		builder.Services.Configure<EcbGatewayOptions>(builder.Configuration.GetSection("EcbGateway"));
@@ -26,17 +28,16 @@ public class Program
 		//Set up EF and point the database
 		builder.Services.AddDbContext<NoviCurrencyWalletDbContext>(options =>
 		{
-			var serviceProvider = builder.Services.BuildServiceProvider();
-			var dbOptions = serviceProvider.GetRequiredService<IOptions<DatabaseOptions>>().Value;
-			options.UseSqlServer(dbOptions.ConnectionString);
+			options.UseSqlServer(connectionString);
 		});
-
 
 
 		// Add services to the container.
 		builder.Services.AddControllers();
 		builder.Services.AddEndpointsApiExplorer();
 		builder.Services.AddSwaggerGen();
+
+		builder.Services.AddAutoMapper(typeof(MapperConfig));
 
 		// Call the job method from the API
 		// Ensure project reference to Jobs project exists
@@ -61,6 +62,8 @@ public class Program
 				.AllowAnyMethod());
 		});
 
+		builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+		builder.Services.AddScoped<IWalletsRepository, WalletRepository>();
 
 		var app = builder.Build();
 
