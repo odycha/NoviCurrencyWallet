@@ -1,6 +1,6 @@
 ﻿namespace NoviCurrencyWallet.Core.Configurations.Options;
 
-public class CurrencyRateJobOptions
+public class DatabaseOptions
 {
 	public string ConnectionString { get; set; } = string.Empty;
 }

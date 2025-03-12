@@ -3,17 +3,22 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35312.102
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoviCurrencyWallet.API", "CurrencyExchangeRates.API\NoviCurrencyWallet.API.csproj", "{854A40B9-0E1D-45FB-9412-EBB1751137EF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoviCurrencyWallet.API", "NoviCurrencyWallet.API\NoviCurrencyWallet.API.csproj", "{C32876AF-C78B-450C-91CF-F7F4EFB090E2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoviCurrencyWallet.Gateway", "CurrencyExchangeRates.Gateway\NoviCurrencyWallet.Gateway.csproj", "{3ECDA242-F917-4940-AADA-42875A22F8AE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoviCurrencyWallet.Core", "NoviCurrencyWallet.Core\NoviCurrencyWallet.Core.csproj", "{487E5595-8BD1-4F26-8CF2-8CBF13953B8D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoviCurrencyWallet.Core", "CurrencyExchangeRates.Core\NoviCurrencyWallet.Core.csproj", "{E01CE625-21D4-40B3-B058-7233CFFF3D98}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoviCurrencyWallet.Data", "NoviCurrencyWallet.Data\NoviCurrencyWallet.Data.csproj", "{E0EC85F3-0043-441A-9133-65B2A2D45BFF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoviCurrencyWallet.Data", "CurrencyExchangeRates.Data\NoviCurrencyWallet.Data.csproj", "{3F015D59-61BC-435F-9D87-3922942A7C2D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoviCurrencyWallet.Gateway", "NoviCurrencyWallet.Gateway\NoviCurrencyWallet.Gateway.csproj", "{4BAA32F9-2FF9-407C-9B05-9839481F2B13}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoviCurrencyWallet.Jobs", "CurrencyExchangeRates.Jobs\NoviCurrencyWallet.Jobs.csproj", "{9475A06B-541F-4860-8EA8-4FF38A43027E}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9DFAB734-219A-4E67-8CB4-0B7603BF04B3}"
+	ProjectSection(SolutionItems) = preProject
+		NoviCurrencyWallet.Jobs\RetrieveRatesBackgroundJob.cs = NoviCurrencyWallet.Jobs\RetrieveRatesBackgroundJob.cs
+	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoviCurrencyWallet.Tests", "CurrencyExchangeRates.Tests\NoviCurrencyWallet.Tests.csproj", "{6316EA0F-57E6-400E-9AA8-C2D92A176B2F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoviCurrencyWallet.Tests", "NoviCurrencyWallet.Tests\NoviCurrencyWallet.Tests.csproj", "{C3EDCADD-1321-4F7A-83DC-DFF4EBD3A499}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoviCurrencyWallet.Jobs", "NoviCurrencyWallet.Jobs\NoviCurrencyWallet.Jobs.csproj", "{8D7F7E46-A41F-47FE-8369-C3257E979F64}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,30 +26,30 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{854A40B9-0E1D-45FB-9412-EBB1751137EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{854A40B9-0E1D-45FB-9412-EBB1751137EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{854A40B9-0E1D-45FB-9412-EBB1751137EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{854A40B9-0E1D-45FB-9412-EBB1751137EF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3ECDA242-F917-4940-AADA-42875A22F8AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3ECDA242-F917-4940-AADA-42875A22F8AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3ECDA242-F917-4940-AADA-42875A22F8AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3ECDA242-F917-4940-AADA-42875A22F8AE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E01CE625-21D4-40B3-B058-7233CFFF3D98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E01CE625-21D4-40B3-B058-7233CFFF3D98}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E01CE625-21D4-40B3-B058-7233CFFF3D98}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E01CE625-21D4-40B3-B058-7233CFFF3D98}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3F015D59-61BC-435F-9D87-3922942A7C2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3F015D59-61BC-435F-9D87-3922942A7C2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3F015D59-61BC-435F-9D87-3922942A7C2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3F015D59-61BC-435F-9D87-3922942A7C2D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9475A06B-541F-4860-8EA8-4FF38A43027E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9475A06B-541F-4860-8EA8-4FF38A43027E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9475A06B-541F-4860-8EA8-4FF38A43027E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9475A06B-541F-4860-8EA8-4FF38A43027E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6316EA0F-57E6-400E-9AA8-C2D92A176B2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6316EA0F-57E6-400E-9AA8-C2D92A176B2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6316EA0F-57E6-400E-9AA8-C2D92A176B2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6316EA0F-57E6-400E-9AA8-C2D92A176B2F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C32876AF-C78B-450C-91CF-F7F4EFB090E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C32876AF-C78B-450C-91CF-F7F4EFB090E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C32876AF-C78B-450C-91CF-F7F4EFB090E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C32876AF-C78B-450C-91CF-F7F4EFB090E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{487E5595-8BD1-4F26-8CF2-8CBF13953B8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{487E5595-8BD1-4F26-8CF2-8CBF13953B8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{487E5595-8BD1-4F26-8CF2-8CBF13953B8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{487E5595-8BD1-4F26-8CF2-8CBF13953B8D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0EC85F3-0043-441A-9133-65B2A2D45BFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0EC85F3-0043-441A-9133-65B2A2D45BFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0EC85F3-0043-441A-9133-65B2A2D45BFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0EC85F3-0043-441A-9133-65B2A2D45BFF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4BAA32F9-2FF9-407C-9B05-9839481F2B13}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4BAA32F9-2FF9-407C-9B05-9839481F2B13}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4BAA32F9-2FF9-407C-9B05-9839481F2B13}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4BAA32F9-2FF9-407C-9B05-9839481F2B13}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C3EDCADD-1321-4F7A-83DC-DFF4EBD3A499}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3EDCADD-1321-4F7A-83DC-DFF4EBD3A499}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3EDCADD-1321-4F7A-83DC-DFF4EBD3A499}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3EDCADD-1321-4F7A-83DC-DFF4EBD3A499}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D7F7E46-A41F-47FE-8369-C3257E979F64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D7F7E46-A41F-47FE-8369-C3257E979F64}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D7F7E46-A41F-47FE-8369-C3257E979F64}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D7F7E46-A41F-47FE-8369-C3257E979F64}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

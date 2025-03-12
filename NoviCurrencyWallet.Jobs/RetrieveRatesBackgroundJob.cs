@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Quartz;
 using System.Data;
+using Microsoft.Data.SqlClient;
 
 namespace NoviCurrencyWallet.Jobs;
 
@@ -12,10 +13,10 @@ namespace NoviCurrencyWallet.Jobs;
 public class RetrieveRatesBackgroundJob : IJob
 {
 	private readonly IEcbGatewayService _gatewayService; // Interface for fetching currency exchange rates from ECB.
-	private readonly CurrencyRateJobOptions _options; // Provides access to appsettings.json configuration.
+	private readonly DatabaseOptions _options; // Provides access to appsettings.json configuration.
 
 	// Constructor for dependency injection of the ECB Gateway Service and configuration settings.
-	public RetrieveRatesBackgroundJob(IEcbGatewayService gatewayService, IOptions<CurrencyRateJobOptions> options)
+	public RetrieveRatesBackgroundJob(IEcbGatewayService gatewayService, IOptions<DatabaseOptions> options)
 	{
 		_gatewayService = gatewayService;
 		_options = options.Value;
@@ -48,7 +49,7 @@ public class RetrieveRatesBackgroundJob : IJob
 		var parameters = new List<SqlParameter>(); // Stores the SQL parameters to prevent SQL injection.
 
 		int index = 0; // Counter for uniquely naming SQL parameters in the loop.
-		foreach (var rate in rates) // Iterates through each currency exchange rate.
+		foreach (var rate in rates.Rates) // Iterates through each currency exchange rate.
 		{
 			
 			var currencyParam = new SqlParameter($"@Currency{index}", SqlDbType.VarChar) { Value = rate.Currency };    // Creates a SQL parameter for the currency code.
@@ -57,7 +58,8 @@ public class RetrieveRatesBackgroundJob : IJob
 			var rateParam = new SqlParameter($"@Rate{index}", SqlDbType.Decimal) { Value = rate.Rate };    // Creates a SQL parameter for the exchange rate value.
 
 
-			var dateParam = new SqlParameter($"@Date{index}", SqlDbType.Date) { Value = rate.Date };     // Creates a SQL parameter for the date associated with the exchange rate.
+			var dateParam = new SqlParameter($"@Date{index}", SqlDbType.Date) { Value = rates.Date };      // Creates a SQL parameter for the date associated with the exchange rate.
+
 
 
 			valueStrings.Add($"(@Currency{index}, @Rate{index}, @Date{index})");     // Adds a placeholder for this set of values in the SQL query.

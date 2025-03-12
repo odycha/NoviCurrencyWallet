@@ -6,15 +6,19 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\CurrencyExchangeRates.Data\CurrencyExchangeRates.Data.csproj" />
-    <ProjectReference Include="..\CurrencyExchangeRates.Gateway\CurrencyExchangeRates.Gateway.csproj" />
-  </ItemGroup>
+
 
   <ItemGroup>
     <Folder Include="Contracts\" />
     <Folder Include="Models\" />
     <Folder Include="Repository\" />
+  </ItemGroup>
+
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\NoviCurrencyWallet.Data\NoviCurrencyWallet.Data.csproj" />
+    <ProjectReference Include="..\NoviCurrencyWallet.Gateway\NoviCurrencyWallet.Gateway.csproj" />
   </ItemGroup>
 
 </Project>

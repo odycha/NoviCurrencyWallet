@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NoviCurrencyWallet.Core\NoviCurrencyWallet.Core.csproj" />
+    <ProjectReference Include="..\NoviCurrencyWallet.Data\NoviCurrencyWallet.Data.csproj" />
+    <ProjectReference Include="..\NoviCurrencyWallet.Gateway\NoviCurrencyWallet.Gateway.csproj" />
+  </ItemGroup>
+
+
+
+</Project>
