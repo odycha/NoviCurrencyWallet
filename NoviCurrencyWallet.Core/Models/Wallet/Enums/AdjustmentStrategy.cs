@@ -1,8 +1,11 @@
-﻿namespace NoviCurrencyWallet.Core.Models.Wallet.Enums;
+﻿using System.Text.Json.Serialization;
 
+namespace NoviCurrencyWallet.Core.Models.Wallet.Enums;
+
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum AdjustmentStrategy
 {
-	AddFundsStrategy,
-	SubtractFundsStrategy,
-	ForceSubtractFundsStrategy
+	AddFundsStrategy = 0,
+	SubtractFundsStrategy = 1,
+	ForceSubtractFundsStrategy = 2
 }

@@ -11,11 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoviCurrencyWallet.Data", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoviCurrencyWallet.Gateway", "NoviCurrencyWallet.Gateway\NoviCurrencyWallet.Gateway.csproj", "{4BAA32F9-2FF9-407C-9B05-9839481F2B13}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9DFAB734-219A-4E67-8CB4-0B7603BF04B3}"
-	ProjectSection(SolutionItems) = preProject
-		NoviCurrencyWallet.Jobs\RetrieveRatesBackgroundJob.cs = NoviCurrencyWallet.Jobs\RetrieveRatesBackgroundJob.cs
-	EndProjectSection
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoviCurrencyWallet.Tests", "NoviCurrencyWallet.Tests\NoviCurrencyWallet.Tests.csproj", "{C3EDCADD-1321-4F7A-83DC-DFF4EBD3A499}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoviCurrencyWallet.Jobs", "NoviCurrencyWallet.Jobs\NoviCurrencyWallet.Jobs.csproj", "{8D7F7E46-A41F-47FE-8369-C3257E979F64}"

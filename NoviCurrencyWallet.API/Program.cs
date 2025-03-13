@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 using NoviCurrencyWallet.Core.Configurations;
 using NoviCurrencyWallet.Core.Contracts;
 using NoviCurrencyWallet.Core.Repository;
+using System.Threading.RateLimiting;
 
 namespace NoviCurrencyWallet.API;
 
@@ -22,7 +23,7 @@ public class Program
 
 		// Bind the settings classes to appsettings.json (Fix 2: Ensure the right section is used)
 		builder.Services.Configure<EcbGatewayOptions>(builder.Configuration.GetSection("EcbGateway"));
-		builder.Services.Configure<DatabaseOptions>(builder.Configuration.GetSection("CurrencyRateJob"));
+		builder.Services.Configure<ConnectionStrings>(builder.Configuration.GetSection("ConnectionStrings"));
 
 
 		//Set up EF and point the database
@@ -62,8 +63,32 @@ public class Program
 				.AllowAnyMethod());
 		});
 
+		//Caching
+		builder.Services.AddMemoryCache();
+		builder.Services.AddScoped<IEcbGatewayService, EcbGatewayService>();
+		builder.Services.Decorate<IEcbGatewayService, CachedEcbGatewayService>(); // Scrutor required
+
 		builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 		builder.Services.AddScoped<IWalletsRepository, WalletRepository>();
+
+
+		//Rate limiting
+		builder.Services.AddRateLimiter(options =>
+		{
+			options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+			options.AddPolicy("fixed", httpContext =>
+				RateLimitPartition.GetFixedWindowLimiter(
+					partitionKey: httpContext.Connection.RemoteIpAddress?.ToString(),
+					factory: _ => new FixedWindowRateLimiterOptions
+					{
+						PermitLimit = 10,
+						Window = TimeSpan.FromSeconds(10)
+					}));
+		});
+
+
+
 
 		var app = builder.Build();
 
@@ -80,8 +105,13 @@ public class Program
 		app.UseCors("AllowAll");
 
 		app.UseHttpsRedirection();
+
+		app.UseRateLimiter();
+
 		app.UseAuthorization();
+
 		app.MapControllers();
+
 		app.Run();
 	}
 }

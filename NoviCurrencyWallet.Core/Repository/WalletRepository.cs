@@ -18,7 +18,7 @@ public class WalletRepository : GenericRepository<Wallet>, IWalletsRepository
 	}
 
 
-	public async Task<GetWalletBalanceDto> GetAsync(int id, string targetCurrency)
+	public async Task<GetWalletBalanceDto> GetAsync(long id, string targetCurrency)
 	{
 		var wallet = await _context.Wallets.FindAsync(id);
 

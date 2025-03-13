@@ -22,7 +22,7 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
 		return entity;
 	}
 
-	public async Task<TResult> GetAsync<TResult>(int? id)
+	public async Task<TResult> GetAsync<TResult>(long? id)
 	{
 		var entity = await _context.Set<T>().FindAsync(id);    //??? what is Set<T>
 

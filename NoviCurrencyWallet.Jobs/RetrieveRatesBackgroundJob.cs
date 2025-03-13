@@ -5,37 +5,45 @@ using Microsoft.Extensions.Options;
 using Quartz;
 using System.Data;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace NoviCurrencyWallet.Jobs;
 
 
-[DisallowConcurrentExecution]  //If the time to complete the job takes more than the Interval, we dont want another instance of the job to be created
+[DisallowConcurrentExecution]
 public class RetrieveRatesBackgroundJob : IJob
 {
-	private readonly IEcbGatewayService _gatewayService; // Interface for fetching currency exchange rates from ECB.
-	private readonly DatabaseOptions _options; // Provides access to appsettings.json configuration.
+	private readonly IEcbGatewayService _gatewayService; 
+	private readonly ConnectionStrings _options;
+	private readonly IMemoryCache _cache;
 
-	// Constructor for dependency injection of the ECB Gateway Service and configuration settings.
-	public RetrieveRatesBackgroundJob(IEcbGatewayService gatewayService, IOptions<DatabaseOptions> options)
+	public RetrieveRatesBackgroundJob(IEcbGatewayService gatewayService, IOptions<ConnectionStrings> options, IMemoryCache cache)
 	{
 		_gatewayService = gatewayService;
 		_options = options.Value;
+		_cache = cache;
 	}
 
-	// The Execute method is triggered by Quartz.NET to run the job.
 	public async Task Execute(IJobExecutionContext context)
 	{
-		// Fetches the latest currency exchange rates asynchronously from the ECB Gateway Service.
+		Console.WriteLine("RetrieveRatesBackgroundJob executed.");
+
 		var rates = await _gatewayService.GetExchangeRatesAsync();
 
-		// Retrieves the database connection string from appsettings.json.
-		var connectionString = _options.ConnectionString;
+		Console.WriteLine($"Fetched {rates?.Rates?.Count ?? 0} exchange rates.");  
 
-		
+		// If rates are empty, log an error
+		if (rates == null || rates.Rates == null || rates.Rates.Count == 0)
+		{
+			Console.WriteLine("⚠️ No exchange rates received from ECB API!");
+			return;  // Stop execution to avoid running an empty SQL query
+		}
+
+		var connectionString = _options.NoviCurrencyWalletDbConnectionString;
+
 		using var connection = new SqlConnection(connectionString);           // Establishes a new SQL database connection using the retrieved connection string.
 		await connection.OpenAsync();                                           // Opens the database connection asynchronously.
 
-		// SQL MERGE statement template for inserting or updating currency rates.
 		var commandText = @"
         MERGE INTO CurrencyRates AS target
         USING (VALUES {0}) AS source (Currency, Rate, Date)
@@ -51,39 +59,32 @@ public class RetrieveRatesBackgroundJob : IJob
 		int index = 0; // Counter for uniquely naming SQL parameters in the loop.
 		foreach (var rate in rates.Rates) // Iterates through each currency exchange rate.
 		{
-			
-			var currencyParam = new SqlParameter($"@Currency{index}", SqlDbType.VarChar) { Value = rate.Currency };    // Creates a SQL parameter for the currency code.
+			var currencyParam = new SqlParameter($"@Currency{index}", SqlDbType.VarChar) { Value = rate.Currency };   
+			var rateParam = new SqlParameter($"@Rate{index}", SqlDbType.Decimal) { Value = rate.Rate };    
+			var dateParam = new SqlParameter($"@Date{index}", SqlDbType.Date) { Value = rates.Date };      
 
+			valueStrings.Add($"(@Currency{index}, @Rate{index}, @Date{index})");     
+			parameters.AddRange(new[] { currencyParam, rateParam, dateParam });    
 
-			var rateParam = new SqlParameter($"@Rate{index}", SqlDbType.Decimal) { Value = rate.Rate };    // Creates a SQL parameter for the exchange rate value.
-
-
-			var dateParam = new SqlParameter($"@Date{index}", SqlDbType.Date) { Value = rates.Date };      // Creates a SQL parameter for the date associated with the exchange rate.
-
-
-
-			valueStrings.Add($"(@Currency{index}, @Rate{index}, @Date{index})");     // Adds a placeholder for this set of values in the SQL query.
-
-
-			parameters.AddRange(new[] { currencyParam, rateParam, dateParam });     // Adds the parameters to the parameter list for safe execution.
-
-			index++; // Increments the index for unique parameter naming.
+			index++; 
 		}
 
-		// Executes the SQL command only if there are values to insert/update.
 		if (valueStrings.Count > 0)
 		{
-			
-			var finalCommandText = string.Format(commandText, string.Join(", ", valueStrings));     // Formats the SQL command by replacing `{0}` with the actual parameterized values.
+			Console.WriteLine($"Preparing to insert/update {valueStrings.Count} currency rates into the database.");
 
-			
-			using var command = new SqlCommand(finalCommandText, connection);    // Creates a SQL command using the final SQL query and the established database connection.
+			var finalCommandText = string.Format(commandText, string.Join(", ", valueStrings));    
+			using var command = new SqlCommand(finalCommandText, connection);    
+			command.Parameters.AddRange(parameters.ToArray());    
+			await command.ExecuteNonQueryAsync();
 
-			
-			command.Parameters.AddRange(parameters.ToArray());     // Adds all the dynamically generated parameters to the SQL command.
-
-			
-			await command.ExecuteNonQueryAsync();    // Executes the SQL MERGE statement asynchronously, performing bulk insert/update.
+			// 🚀 **Invalidate Cache After Updating Database**
+			_cache.Remove("ECB_ExchangeRates");
+			Console.WriteLine("✅ Cache invalidated after updating exchange rates.");
+		}
+		else
+		{
+			Console.WriteLine("⚠️ No valid exchange rate data to insert/update.");
 		}
 	}
 }

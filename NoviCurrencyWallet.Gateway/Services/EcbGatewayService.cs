@@ -3,6 +3,7 @@ using NoviCurrencyWallet.Gateway.Contracts;
 using NoviCurrencyWallet.Gateway.Models;
 using Microsoft.Extensions.Options;
 using System.Xml.Serialization;
+using System.Xml;
 
 namespace NoviCurrencyWallet.Gateway.Services
 {
@@ -27,19 +28,32 @@ namespace NoviCurrencyWallet.Gateway.Services
 				throw new HttpRequestException($"Failed to fetch exchange rates. Status Code: {response.StatusCode}");
 			}
 
+
 			string xmlData = await response.Content.ReadAsStringAsync();
+
+			// 🚨 Log the XML response for debugging
+			Console.WriteLine("🔍 Raw XML Response from ECB:");
+			Console.WriteLine(xmlData);
+
 			return DeserializeXmlStringToObject(xmlData);
 		}
 
 		public EcbCube DeserializeXmlStringToObject(string xmlData)
 		{
-			var serializer = new XmlSerializer(typeof(EcbEnvelope));              //It is used to convert XML into a C# object (deserialization) or vice versa (serialization). typeof(EcbCurrencyRateDto) tells the serializer which class the XML should be converted into.
+			var serializer = new XmlSerializer(typeof(EcbEnvelope));
 
-			using (var reader = new StringReader(xmlData))                               //It treats a string as a readable stream, which means it allows XMLSerializer to read the XML data like a file. This is required because XmlSerializer.Deserialize() expects a stream or reader as input, not a plain string.
+			var xmlReaderSettings = new XmlReaderSettings
 			{
-				var envelope = (EcbEnvelope)serializer.Deserialize(reader);				//The Deserialize method reads from reader, processes the XML, and creates an instance of EcbCurrencyRateDto
-				return envelope?.CubeContainer?.DateCube;                               //ach ? ensures that if any of the preceding objects are null, the expression short-circuits and returns null instead of throwing an exception.
-			}                                                                               
+				IgnoreWhitespace = true,
+				IgnoreComments = true
+			};
+
+			using (var stringReader = new StringReader(xmlData))
+			using (var xmlReader = XmlReader.Create(stringReader, xmlReaderSettings))
+			{
+				var envelope = (EcbEnvelope)serializer.Deserialize(xmlReader);
+				return envelope?.CubeContainer?.DateCube;
+			}
 		}
 
 	}

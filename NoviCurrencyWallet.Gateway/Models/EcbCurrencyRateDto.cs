@@ -2,47 +2,53 @@
 
 namespace NoviCurrencyWallet.Gateway.Models
 {
-
-	// Root element of the XML document
-	[XmlRoot("Envelope", Namespace = "http://www.ecb.int/vocabulary/2002-08-01/eurofxref")]
+	[XmlRoot(ElementName = "Envelope", Namespace = "http://www.gesmes.org/xml/2002-08-01")]
 	public class EcbEnvelope
 	{
-		[XmlElement("Cube")] // Matches <Cube> under <Envelope>
+		[XmlElement(ElementName = "subject", Namespace = "http://www.gesmes.org/xml/2002-08-01")]
+		public string Subject { get; set; }
+
+		[XmlElement(ElementName = "Sender", Namespace = "http://www.gesmes.org/xml/2002-08-01")]
+		public EcbSender Sender { get; set; }
+
+		[XmlElement(ElementName = "Cube", Namespace = "http://www.ecb.int/vocabulary/2002-08-01/eurofxref")]
 		public EcbCubeContainer CubeContainer { get; set; }
 	}
 
-	// Middle container for exchange rates
+	public class EcbSender
+	{
+		[XmlElement(ElementName = "name", Namespace = "http://www.gesmes.org/xml/2002-08-01")]
+		public string Name { get; set; }
+	}
+
 	public class EcbCubeContainer
 	{
-		[XmlElement("Cube")] // Matches <Cube time='2025-03-10'>
+		[XmlElement("Cube", Namespace = "http://www.ecb.int/vocabulary/2002-08-01/eurofxref")]
 		public EcbCube DateCube { get; set; }
 	}
 
-	// Represents the specific date and contains multiple currency rates
 	public class EcbCube
 	{
-		[XmlAttribute("time")] // Maps the "time" attribute
+		[XmlAttribute("time")]
 		public string Date { get; set; }
 
-		[XmlElement("Cube")] // Matches multiple <Cube currency='XYZ' rate='X.XX'/>
+		[XmlElement("Cube", Namespace = "http://www.ecb.int/vocabulary/2002-08-01/eurofxref")]
 		public List<EcbCurrencyRateDto> Rates { get; set; }
 	}
 
-	// Represents a single exchange rate (Currency + Rate)
 	public class EcbCurrencyRateDto
 	{
-		[XmlAttribute("currency")] // Maps the "currency" attribute
+		[XmlAttribute("currency")]
 		public string Currency { get; set; }
 
-		[XmlAttribute("rate")] // Maps the "rate" attribute
+		[XmlAttribute("rate")]
 		public decimal Rate { get; set; }
 	}
 }
 
 
 
-
-
+//Ensures inner <Cube> elements are correctly mapped by using Namespace = "" to ignore any nested namespaces.
 
 
 
