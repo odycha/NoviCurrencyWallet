@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using NoviCurrencyWallet.Core.Contracts;
 using NoviCurrencyWallet.Data;
 
@@ -14,13 +15,33 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
         _mapper = mapper;
     }
 
-
-
-
-
-    public async Task AddAsync(T entity)
+    public async Task AddAsync<TCreateDto>(TCreateDto createDto)
 	{
-        _context.Add(entity); //equivalent to _context.Set<T>().Add(entity); EF auto detects entity type
-        await _context.SaveChangesAsync();
+		var entity = _mapper.Map<T>(createDto);
+		await _context.Set<T>().AddAsync(entity); 
+		await _context.SaveChangesAsync();
 	}
+
+	public async Task<TResult> GetAsync<TResult>(int? id)
+	{
+		var entity = await _context.Set<T>().FindAsync(id);    //??? what is Set<T>
+
+		if (entity is null)
+		{
+			//TODO: throw new NotFoundException(typeof(T).Name, id.HasValue ? id : "No Key Provided");
+		}
+
+		var resultDto = _mapper.Map<TResult>(entity);
+
+		return resultDto;
+	}
+
+	public async Task UpdateAsync(T entity)
+	{
+		_context.Update(entity);
+		await _context.SaveChangesAsync();
+	}
+
+
+
 }

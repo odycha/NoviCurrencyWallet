@@ -2,11 +2,7 @@
 
 public interface IGenericRepository<T> where T : class
 {
-	public Task AddAsync(T entity);
-
-	public Task<T> GetAsync(int id);
-	public Task<T> GetAsync(int id, string currency);
-
-
-
+	public Task AddAsync<TCreateDto>(TCreateDto createDto);
+	public Task<TResult> GetAsync<TResult>(int? id);
+	public Task UpdateAsync(T entity);
 }

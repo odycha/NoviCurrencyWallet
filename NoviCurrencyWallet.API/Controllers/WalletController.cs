@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using NoviCurrencyWallet.Core.Contracts;
 using NoviCurrencyWallet.Core.Models.Wallet;
+using NoviCurrencyWallet.Core.Models.Wallet.Enums;
 using NoviCurrencyWallet.Data.Entities;
 
 namespace NoviCurrencyWallet.API.Controllers;
@@ -20,28 +21,27 @@ public class WalletController : ControllerBase
 
 
 	//Why ActionResult?
-	[HttpGet]
-	public async Task<ActionResult<GetWalletBalanceDto>> GetWalletBalance(int id, string? currency = null)
+	[HttpGet("{walletId}")]
+	public async Task<ActionResult<GetWalletBalanceDto>> GetWalletBalance(int walletId, string? currency = null)
 	{
-		Wallet walletBalance;
+		GetWalletBalanceDto walletBalanceDto;
 
 		//IF I CALLED _walletsRepository.GetAsync(id, null);then the overloaded method would still be used
 
 		if (string.IsNullOrEmpty(currency))
 		{
-			walletBalance = await _walletsRepository.GetAsync(id); // Call single-parameter method
+			walletBalanceDto = await _walletsRepository.GetAsync<GetWalletBalanceDto>(walletId); // Call single-parameter method
 		}
 		else
 		{
-			walletBalance = await _walletsRepository.GetAsync(id, currency); // Call overloaded method
+			walletBalanceDto = await _walletsRepository.GetAsync(walletId, currency); // Call overloaded method
 		}
 
-		if (walletBalance == null)
+		if (walletBalanceDto == null)
 		{
 			return NotFound("Wallet not found.");
 		}
 
-		var walletBalanceDto = _mapper.Map<GetWalletBalanceDto>(walletBalance);
 		return Ok(walletBalanceDto);
 	}
 
@@ -49,38 +49,20 @@ public class WalletController : ControllerBase
 	[HttpPost]
 	public async Task<ActionResult<Wallet>> PostWallet(CreateWalletDto createWalletDto)
 	{
-		var wallet = _mapper.Map<Wallet>(createWalletDto);
+        await _walletsRepository.AddAsync<CreateWalletDto>(createWalletDto);
 
-        await _walletsRepository.AddAsync(wallet);
-
-        return CreatedAtAction("GetWallet", new { id = wallet, Id }, wallet);
+        return CreatedAtAction("GetWalletBalance", new { id = wallet, Id }, wallet);
 	}
 
 
 
-	[HttpPost]
-	public async Task AdjustWalletBalance()
+	[HttpPost("{walletId}/adjustbalance")]
+	public async Task<IActionResult> AdjustWalletBalance(UpdateWalletBalanceDto updateWalletBalanceDto)
 	{
+		await _walletsRepository.AdjustBalance(updateWalletBalanceDto);
 
-	} 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+		return Ok();
+	}
 
 
 

@@ -4,7 +4,7 @@ namespace NoviCurrencyWallet.Core.Models.Wallet;
 
 public class GetWalletBalanceDto
 {
-	public int Id { get; set; }
+	public long Id { get; set; }
 
 	[Range(0, double.MaxValue, ErrorMessage = "Balance cannot be negative.")]
 	public decimal Balance { get; set; }
@@ -14,6 +14,7 @@ public class GetWalletBalanceDto
 	[RegularExpression(@"^[A-Z]{3}$", ErrorMessage = "Currency code must be in uppercase.")]
 	public string Currency { get; set; }
 
-	public decimal? ConvertedBalance { get; set; } // Optional, for currency conversion results
 	public string? ConvertedCurrency { get; set; } // Optional, for currency conversion results
+	public decimal? ConvertedBalance { get; set; } // Optional, for currency conversion results
+	
 }

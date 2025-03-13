@@ -6,6 +6,9 @@ namespace NoviCurrencyWallet.Core.Models.Wallet;
 public class UpdateWalletBalanceDto
 {
 	[Required]
+	public long Id { get; set; }
+
+	[Required]
 	[Range(0.01, double.MaxValue, ErrorMessage = "Adjustment amount must be greater than zero.")]
 	public decimal Amount { get; set; } 
 

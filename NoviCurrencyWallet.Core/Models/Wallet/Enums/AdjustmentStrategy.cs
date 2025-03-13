@@ -2,7 +2,7 @@
 
 public enum AdjustmentStrategy
 {
-	AddFunds,
-	SubtractFunds,
-	ForceSubtractFunds
+	AddFundsStrategy,
+	SubtractFundsStrategy,
+	ForceSubtractFundsStrategy
 }
