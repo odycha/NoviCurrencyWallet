@@ -11,11 +11,9 @@ namespace NoviCurrencyWallet.API.Controllers;
 [ApiController]
 public class WalletController : ControllerBase
 {
-    private readonly IMapper _mapper;
     private readonly IWalletsRepository _walletsRepository;
-    public WalletController(IMapper mapper, IWalletsRepository walletsRepository)
+    public WalletController(IWalletsRepository walletsRepository)
     {
-        _mapper = mapper;
         _walletsRepository = walletsRepository;
     }
 
@@ -24,18 +22,11 @@ public class WalletController : ControllerBase
 	[HttpGet("{walletId}")]
 	public async Task<ActionResult<GetWalletBalanceDto>> GetWalletBalance(int walletId, string? currency = null)
 	{
-		GetWalletBalanceDto walletBalanceDto;
-
 		//IF I CALLED _walletsRepository.GetAsync(id, null);then the overloaded method would still be used
-
-		if (string.IsNullOrEmpty(currency))
-		{
-			walletBalanceDto = await _walletsRepository.GetAsync<GetWalletBalanceDto>(walletId); // Call single-parameter method
-		}
-		else
-		{
-			walletBalanceDto = await _walletsRepository.GetAsync(walletId, currency); // Call overloaded method
-		}
+		
+		var walletBalanceDto = string.IsNullOrEmpty(currency)
+			? await _walletsRepository.GetAsync<GetWalletBalanceDto>(walletId)
+			: await _walletsRepository.GetAsync(walletId, currency);
 
 		if (walletBalanceDto == null)
 		{
@@ -47,11 +38,14 @@ public class WalletController : ControllerBase
 
 
 	[HttpPost]
-	public async Task<ActionResult<Wallet>> PostWallet(CreateWalletDto createWalletDto)
+	public async Task<ActionResult<GetWalletBalanceDto>> PostWallet(CreateWalletDto createWalletDto)
 	{
-        await _walletsRepository.AddAsync<CreateWalletDto>(createWalletDto);
+		if (!ModelState.IsValid)
+			return BadRequest(ModelState);
 
-        return CreatedAtAction("GetWalletBalance", new { id = wallet, Id }, wallet);
+		var createdWalletDto = await _walletsRepository.CreateWalletAsync(createWalletDto);
+
+		return CreatedAtAction(nameof(GetWalletBalance), new { walletId = createdWalletDto.Id }, createdWalletDto);
 	}
 
 

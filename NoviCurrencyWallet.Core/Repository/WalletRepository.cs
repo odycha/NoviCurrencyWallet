@@ -42,6 +42,27 @@ public class WalletRepository : GenericRepository<Wallet>, IWalletsRepository
 	}
 
 
+	public async Task<GetWalletBalanceDto> CreateWalletAsync(CreateWalletDto createWalletDto)
+	{
+		var newWallet = _mapper.Map<Wallet>(createWalletDto);
+
+		var wallet = await AddAsync(newWallet);
+
+		if (wallet == null)
+		{
+			//TODO: throw new Exception("Failed to create wallet");
+		}
+
+
+		var getWalletBalanceDto = _mapper.Map<GetWalletBalanceDto>(wallet);
+
+		return getWalletBalanceDto;
+	}
+
+
+
+
+
 	public async Task AdjustBalance(UpdateWalletBalanceDto updateWalletBalanceDto)
 	{
 		var wallet = await _context.Wallets.FindAsync(updateWalletBalanceDto.Id);

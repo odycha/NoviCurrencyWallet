@@ -6,6 +6,7 @@ namespace NoviCurrencyWallet.Core.Contracts;
 public interface IWalletsRepository : IGenericRepository<Wallet>
 {
 	public Task<GetWalletBalanceDto> GetAsync(int id, string targetCurrency);
+	public Task<GetWalletBalanceDto> CreateWalletAsync(CreateWalletDto createWalletDto);
 
 	public Task AdjustBalance(UpdateWalletBalanceDto updateWalletBalanceDto);
 
