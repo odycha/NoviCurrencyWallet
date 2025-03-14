@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using NoviCurrencyWallet.Core.Contracts;
 using NoviCurrencyWallet.Core.Models.Wallet;
-using Microsoft.AspNetCore.RateLimiting;
-using NoviCurrencyWallet.Core.Exceptions;
 
 namespace NoviCurrencyWallet.API.Controllers;
 

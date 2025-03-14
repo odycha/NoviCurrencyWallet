@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using NoviCurrencyWallet.Core.Exceptions;
 using System.Net;
-using System.Net.Http;
 
 namespace NoviCurrencyWallet.Core.Middleware;
 

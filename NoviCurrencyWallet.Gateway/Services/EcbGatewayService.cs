@@ -6,58 +6,57 @@ using System.Xml.Serialization;
 using System.Xml;
 using Microsoft.Extensions.Logging;
 
-namespace NoviCurrencyWallet.Gateway.Services
+namespace NoviCurrencyWallet.Gateway.Services;
+
+public class EcbGatewayService : IEcbGatewayService
 {
-	public class EcbGatewayService : IEcbGatewayService
+
+	private readonly HttpClient _httpClient;
+	private readonly EcbGatewayOptions _options;
+	private readonly ILogger<EcbGatewayService> _logger;
+	public EcbGatewayService(IHttpClientFactory httpClientFactory, IOptions<EcbGatewayOptions> options, ILogger<EcbGatewayService> logger)
 	{
-
-		private readonly HttpClient _httpClient;
-		private readonly EcbGatewayOptions _options;
-		private readonly ILogger<EcbGatewayService> _logger;
-		public EcbGatewayService(IHttpClientFactory httpClientFactory, IOptions<EcbGatewayOptions> options, ILogger<EcbGatewayService> logger)
-		{
-			_httpClient = httpClientFactory.CreateClient("EcbClient");
-			_options = options.Value;
-			_logger = logger;
-		}
-
-		public async Task<EcbCube> GetExchangeRatesAsync()
-		{
-			var url = _options.BaseUrl;
-			var response = await _httpClient.GetAsync(url);
-
-			if (!response.IsSuccessStatusCode)
-			{
-				throw new HttpRequestException($"Failed to fetch exchange rates. Status Code: {response.StatusCode}");
-			}
-
-
-			string xmlData = await response.Content.ReadAsStringAsync();
-
-			_logger.LogInformation("🔍Raw XML Response from ECB:\n{XmlData}", xmlData);
-
-			return DeserializeXmlStringToObject(xmlData);
-		}
-
-		public EcbCube DeserializeXmlStringToObject(string xmlData)
-		{
-			var serializer = new XmlSerializer(typeof(EcbEnvelope));
-
-			var xmlReaderSettings = new XmlReaderSettings
-			{
-				IgnoreWhitespace = true,
-				IgnoreComments = true
-			};
-
-			using (var stringReader = new StringReader(xmlData))
-			using (var xmlReader = XmlReader.Create(stringReader, xmlReaderSettings))
-			{
-				var envelope = (EcbEnvelope)serializer.Deserialize(xmlReader);
-				return envelope?.CubeContainer?.DateCube;
-			}
-		}
-
+		_httpClient = httpClientFactory.CreateClient("EcbClient");
+		_options = options.Value;
+		_logger = logger;
 	}
+
+	public async Task<EcbCube> GetExchangeRatesAsync()
+	{
+		var url = _options.BaseUrl;
+		var response = await _httpClient.GetAsync(url);
+
+		if (!response.IsSuccessStatusCode)
+		{
+			throw new HttpRequestException($"Failed to fetch exchange rates. Status Code: {response.StatusCode}");
+		}
+
+
+		string xmlData = await response.Content.ReadAsStringAsync();
+
+		_logger.LogInformation("🔍Raw XML Response from ECB:\n{XmlData}", xmlData);
+
+		return DeserializeXmlStringToObject(xmlData);
+	}
+
+	public EcbCube DeserializeXmlStringToObject(string xmlData)
+	{
+		var serializer = new XmlSerializer(typeof(EcbEnvelope));
+
+		var xmlReaderSettings = new XmlReaderSettings
+		{
+			IgnoreWhitespace = true,
+			IgnoreComments = true
+		};
+
+		using (var stringReader = new StringReader(xmlData))
+		using (var xmlReader = XmlReader.Create(stringReader, xmlReaderSettings))
+		{
+			var envelope = (EcbEnvelope)serializer.Deserialize(xmlReader);
+			return envelope?.CubeContainer?.DateCube;
+		}
+	}
+
 }
 
 

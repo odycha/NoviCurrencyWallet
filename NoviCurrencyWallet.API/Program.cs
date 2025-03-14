@@ -1,17 +1,16 @@
-using NoviCurrencyWallet.Gateway.Configurations;
+using Microsoft.EntityFrameworkCore;
+using NoviCurrencyWallet.Core.Configurations;
 using NoviCurrencyWallet.Core.Configurations.Options;
+using NoviCurrencyWallet.Core.Contracts;
+using NoviCurrencyWallet.Core.Middleware;
+using NoviCurrencyWallet.Core.Repository;
+using NoviCurrencyWallet.Data;
+using NoviCurrencyWallet.Gateway.Configurations;
 using NoviCurrencyWallet.Gateway.Contracts;
 using NoviCurrencyWallet.Gateway.Services;
 using NoviCurrencyWallet.Jobs;
-using Microsoft.EntityFrameworkCore;
-using NoviCurrencyWallet.Data;
-using Microsoft.Extensions.Options;
-using NoviCurrencyWallet.Core.Configurations;
-using NoviCurrencyWallet.Core.Contracts;
-using NoviCurrencyWallet.Core.Repository;
-using System.Threading.RateLimiting;
-using NoviCurrencyWallet.Core.Middleware;
 using Serilog;
+using System.Threading.RateLimiting;
 
 namespace NoviCurrencyWallet.API;
 

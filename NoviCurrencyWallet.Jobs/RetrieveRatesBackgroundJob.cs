@@ -1,13 +1,11 @@
-﻿using NoviCurrencyWallet.Core.Configurations.Options;
-using NoviCurrencyWallet.Gateway.Contracts;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using NoviCurrencyWallet.Core.Configurations.Options;
+using NoviCurrencyWallet.Gateway.Contracts;
 using Quartz;
 using System.Data;
-using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Build.Framework;
-using Microsoft.Extensions.Logging;
 
 namespace NoviCurrencyWallet.Jobs;
 
@@ -15,7 +13,7 @@ namespace NoviCurrencyWallet.Jobs;
 [DisallowConcurrentExecution]
 public class RetrieveRatesBackgroundJob : IJob
 {
-	private readonly IEcbGatewayService _gatewayService; 
+	private readonly IEcbGatewayService _gatewayService;
 	private readonly ConnectionStrings _options;
 	private readonly IMemoryCache _cache;
 	private readonly ILogger<RetrieveRatesBackgroundJob> _logger;
@@ -67,26 +65,26 @@ public class RetrieveRatesBackgroundJob : IJob
 		int index = 0; // Counter for uniquely naming SQL parameters in the loop.
 		foreach (var rate in rates.Rates) // Iterates through each currency exchange rate.
 		{
-			var currencyParam = new SqlParameter($"@Currency{index}", SqlDbType.VarChar) { Value = rate.Currency };   
-			var rateParam = new SqlParameter($"@Rate{index}", SqlDbType.Decimal) { Value = rate.Rate };    
-			var dateParam = new SqlParameter($"@Date{index}", SqlDbType.Date) { Value = rates.Date };      
+			var currencyParam = new SqlParameter($"@Currency{index}", SqlDbType.VarChar) { Value = rate.Currency };
+			var rateParam = new SqlParameter($"@Rate{index}", SqlDbType.Decimal) { Value = rate.Rate };
+			var dateParam = new SqlParameter($"@Date{index}", SqlDbType.Date) { Value = rates.Date };
 
-			valueStrings.Add($"(@Currency{index}, @Rate{index}, @Date{index})");     
-			parameters.AddRange(new[] { currencyParam, rateParam, dateParam });    
+			valueStrings.Add($"(@Currency{index}, @Rate{index}, @Date{index})");
+			parameters.AddRange(new[] { currencyParam, rateParam, dateParam });
 
-			index++; 
+			index++;
 		}
 
 		if (valueStrings.Count > 0)
 		{
 			_logger.LogInformation($"🔍Preparing to insert/update {valueStrings.Count} currency rates into the database.");
 
-			var finalCommandText = string.Format(commandText, string.Join(", ", valueStrings));    
-			using var command = new SqlCommand(finalCommandText, connection);    
-			command.Parameters.AddRange(parameters.ToArray());    
+			var finalCommandText = string.Format(commandText, string.Join(", ", valueStrings));
+			using var command = new SqlCommand(finalCommandText, connection);
+			command.Parameters.AddRange(parameters.ToArray());
 			await command.ExecuteNonQueryAsync();
 
-			// 🚀 **Invalidate Cache After Updating Database**
+			// Invalidate Cache After Updating Database**
 			_cache.Remove("ECB_ExchangeRates");
 
 			_logger.LogInformation("🔍Cache invalidated after updating exchange rates.");
