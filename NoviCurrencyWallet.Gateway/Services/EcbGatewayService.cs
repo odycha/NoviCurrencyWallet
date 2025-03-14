@@ -4,6 +4,7 @@ using NoviCurrencyWallet.Gateway.Models;
 using Microsoft.Extensions.Options;
 using System.Xml.Serialization;
 using System.Xml;
+using Microsoft.Extensions.Logging;
 
 namespace NoviCurrencyWallet.Gateway.Services
 {
@@ -12,10 +13,12 @@ namespace NoviCurrencyWallet.Gateway.Services
 
 		private readonly HttpClient _httpClient;
 		private readonly EcbGatewayOptions _options;
-		public EcbGatewayService(IHttpClientFactory httpClientFactory, IOptions<EcbGatewayOptions> options)
+		private readonly ILogger<EcbGatewayService> _logger;
+		public EcbGatewayService(IHttpClientFactory httpClientFactory, IOptions<EcbGatewayOptions> options, ILogger<EcbGatewayService> logger)
 		{
 			_httpClient = httpClientFactory.CreateClient("EcbClient");
 			_options = options.Value;
+			_logger = logger;
 		}
 
 		public async Task<EcbCube> GetExchangeRatesAsync()
@@ -31,9 +34,7 @@ namespace NoviCurrencyWallet.Gateway.Services
 
 			string xmlData = await response.Content.ReadAsStringAsync();
 
-			// 🚨 Log the XML response for debugging
-			Console.WriteLine("🔍 Raw XML Response from ECB:");
-			Console.WriteLine(xmlData);
+			_logger.LogInformation("🔍Raw XML Response from ECB:\n{XmlData}", xmlData);
 
 			return DeserializeXmlStringToObject(xmlData);
 		}

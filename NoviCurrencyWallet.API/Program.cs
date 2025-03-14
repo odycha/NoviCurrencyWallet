@@ -10,6 +10,8 @@ using NoviCurrencyWallet.Core.Configurations;
 using NoviCurrencyWallet.Core.Contracts;
 using NoviCurrencyWallet.Core.Repository;
 using System.Threading.RateLimiting;
+using NoviCurrencyWallet.Core.Middleware;
+using Serilog;
 
 namespace NoviCurrencyWallet.API;
 
@@ -63,8 +65,13 @@ public class Program
 				.AllowAnyMethod());
 		});
 
+		//Serilog and Seq Configuration
+		builder.Host.UseSerilog((ctx, lc) => lc.WriteTo.Console().ReadFrom.Configuration(ctx.Configuration));
+
 		//Caching
 		builder.Services.AddMemoryCache();
+
+
 		builder.Services.AddScoped<IEcbGatewayService, EcbGatewayService>();
 		builder.Services.Decorate<IEcbGatewayService, CachedEcbGatewayService>(); // Scrutor required
 
@@ -99,7 +106,7 @@ public class Program
 			app.UseSwaggerUI();
 		}
 
-
+		app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 
 		//Cors configuration(2/2)
 		app.UseCors("AllowAll");

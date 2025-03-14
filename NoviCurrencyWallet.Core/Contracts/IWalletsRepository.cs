@@ -10,7 +10,7 @@ public interface IWalletsRepository : IGenericRepository<Wallet>
 
 	public Task AdjustBalance(UpdateWalletBalanceDto updateWalletBalanceDto);
 
-	public decimal ConvertCurrency(string initialCurrency, string targetCurrency, decimal ammount);
+	Task<decimal> ConvertCurrency(string initialCurrency, string targetCurrency, decimal ammount);
 
 
 }

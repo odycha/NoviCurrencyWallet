@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using NoviCurrencyWallet.Core.Contracts;
+using NoviCurrencyWallet.Core.Exceptions;
 using NoviCurrencyWallet.Core.Models.Wallet;
 using NoviCurrencyWallet.Core.Models.Wallet.Enums;
 using NoviCurrencyWallet.Data;
@@ -24,10 +26,10 @@ public class WalletRepository : GenericRepository<Wallet>, IWalletsRepository
 
 		if (wallet == null)
 		{
-			//TODO
+			throw new NotFoundException(nameof(Wallet), id);
 		}
 
-		decimal convertedBalance = ConvertCurrency(wallet.Currency, targetCurrency, wallet.Balance);
+		decimal convertedBalance = await ConvertCurrency(wallet.Currency, targetCurrency, wallet.Balance);
 
 		var resultDto = new GetWalletBalanceDto
 		{
@@ -41,27 +43,16 @@ public class WalletRepository : GenericRepository<Wallet>, IWalletsRepository
 		return resultDto;
 	}
 
-
 	public async Task<GetWalletBalanceDto> CreateWalletAsync(CreateWalletDto createWalletDto)
 	{
 		var newWallet = _mapper.Map<Wallet>(createWalletDto);
 
 		var wallet = await AddAsync(newWallet);
 
-		if (wallet == null)
-		{
-			//TODO: throw new Exception("Failed to create wallet");
-		}
-
-
 		var getWalletBalanceDto = _mapper.Map<GetWalletBalanceDto>(wallet);
 
 		return getWalletBalanceDto;
 	}
-
-
-
-
 
 	public async Task AdjustBalance(UpdateWalletBalanceDto updateWalletBalanceDto)
 	{
@@ -69,7 +60,7 @@ public class WalletRepository : GenericRepository<Wallet>, IWalletsRepository
 
 		if (wallet == null)
 		{
-			//TODO
+			throw new NotFoundException(nameof(Wallet), updateWalletBalanceDto.Id);
 		}
 
 		decimal ammount = updateWalletBalanceDto.Amount;
@@ -77,7 +68,7 @@ public class WalletRepository : GenericRepository<Wallet>, IWalletsRepository
 		if(updateWalletBalanceDto.Currency != wallet.Currency)
 		{
 			//convert ammount to the same currency
-			ammount = ConvertCurrency(updateWalletBalanceDto.Currency, wallet.Currency, ammount);
+			ammount = await ConvertCurrency(updateWalletBalanceDto.Currency, wallet.Currency, ammount);
 		}
 
 
@@ -89,7 +80,7 @@ public class WalletRepository : GenericRepository<Wallet>, IWalletsRepository
 		{
 			if(ammount > wallet.Balance)
 			{
-				//TODO THROW EXCEPTION
+				throw new BadRequestException("Insufficient funds for operation");
 			}
 			else
 			{
@@ -105,49 +96,34 @@ public class WalletRepository : GenericRepository<Wallet>, IWalletsRepository
 	}
 
 
-	public decimal ConvertCurrency(string initialCurrency, string targetCurrency, decimal ammount)
+	public async Task<decimal> ConvertCurrency(string initialCurrency, string targetCurrency, decimal ammount)
 	{
-		decimal convertedBalance;
-		var targetCurrencyRate = _context.CurrencyRates.FirstOrDefault(r => r.Currency == targetCurrency);
-
-		if (targetCurrencyRate == null)
+		if(initialCurrency == targetCurrency)
 		{
-			//TODO
+			return ammount;
 		}
 
-		if (initialCurrency == "EUR")
+		decimal initialRate = await GetCurrencyRate(initialCurrency);
+		decimal targetRate = await GetCurrencyRate(targetCurrency);
+
+		decimal ammountInEur = ammount / initialRate;
+		decimal convertedAmmount = ammountInEur * targetRate;
+
+		return convertedAmmount;
+	}
+
+	private async Task<decimal> GetCurrencyRate(string currency)
+	{
+		if (currency == "EUR") return 1m;
+
+		var currencyRate = await _context.CurrencyRates.FirstOrDefaultAsync(r => r.Currency == currency);
+		if (currencyRate == null)
 		{
-			if (targetCurrency == "EUR")
-			{
-				convertedBalance = ammount;
-			}
-			else
-			{
-				convertedBalance = (ammount) * (targetCurrencyRate.Rate);
-			}
-		}
-		else
-		{
-			var walletCurrencyRate = _context.CurrencyRates.FirstOrDefault(r => r.Currency == initialCurrency);
-			if (walletCurrencyRate == null)
-			{
-				//TODO
-			}
-
-
-			if (targetCurrency == "EUR")
-			{
-				convertedBalance = (ammount) / (walletCurrencyRate.Rate);
-			}
-			else
-			{
-				decimal convertedToEur = (ammount) / (walletCurrencyRate.Rate);
-
-				convertedBalance = convertedToEur * (targetCurrencyRate.Rate);
-			}
+			throw new NotFoundException("CurrencyRate", currency);
 		}
 
-		return convertedBalance;
+		return currencyRate.Rate;
 	}
 
 }
+

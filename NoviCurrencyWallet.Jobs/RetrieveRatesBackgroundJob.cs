@@ -6,6 +6,8 @@ using Quartz;
 using System.Data;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Build.Framework;
+using Microsoft.Extensions.Logging;
 
 namespace NoviCurrencyWallet.Jobs;
 
@@ -16,26 +18,32 @@ public class RetrieveRatesBackgroundJob : IJob
 	private readonly IEcbGatewayService _gatewayService; 
 	private readonly ConnectionStrings _options;
 	private readonly IMemoryCache _cache;
+	private readonly ILogger<RetrieveRatesBackgroundJob> _logger;
 
-	public RetrieveRatesBackgroundJob(IEcbGatewayService gatewayService, IOptions<ConnectionStrings> options, IMemoryCache cache)
+	public RetrieveRatesBackgroundJob(IEcbGatewayService gatewayService,
+		IOptions<ConnectionStrings> options,
+		IMemoryCache cache,
+		ILogger<RetrieveRatesBackgroundJob> logger)
 	{
 		_gatewayService = gatewayService;
 		_options = options.Value;
 		_cache = cache;
+		_logger = logger;
 	}
 
 	public async Task Execute(IJobExecutionContext context)
 	{
-		Console.WriteLine("RetrieveRatesBackgroundJob executed.");
+		_logger.LogInformation("🔍RetrieveRatesBackgroundJob executed.");
 
 		var rates = await _gatewayService.GetExchangeRatesAsync();
 
-		Console.WriteLine($"Fetched {rates?.Rates?.Count ?? 0} exchange rates.");  
+		_logger.LogInformation($"🔍Fetched {rates?.Rates?.Count ?? 0} exchange rates.");
 
 		// If rates are empty, log an error
 		if (rates == null || rates.Rates == null || rates.Rates.Count == 0)
 		{
-			Console.WriteLine("⚠️ No exchange rates received from ECB API!");
+			_logger.LogInformation("🔍No exchange rates received from ECB API!");
+
 			return;  // Stop execution to avoid running an empty SQL query
 		}
 
@@ -71,7 +79,7 @@ public class RetrieveRatesBackgroundJob : IJob
 
 		if (valueStrings.Count > 0)
 		{
-			Console.WriteLine($"Preparing to insert/update {valueStrings.Count} currency rates into the database.");
+			_logger.LogInformation($"🔍Preparing to insert/update {valueStrings.Count} currency rates into the database.");
 
 			var finalCommandText = string.Format(commandText, string.Join(", ", valueStrings));    
 			using var command = new SqlCommand(finalCommandText, connection);    
@@ -80,11 +88,12 @@ public class RetrieveRatesBackgroundJob : IJob
 
 			// 🚀 **Invalidate Cache After Updating Database**
 			_cache.Remove("ECB_ExchangeRates");
-			Console.WriteLine("✅ Cache invalidated after updating exchange rates.");
+
+			_logger.LogInformation("🔍Cache invalidated after updating exchange rates.");
 		}
 		else
 		{
-			Console.WriteLine("⚠️ No valid exchange rate data to insert/update.");
+			_logger.LogInformation("🔍No valid exchange rate data to insert/update.");
 		}
 	}
 }

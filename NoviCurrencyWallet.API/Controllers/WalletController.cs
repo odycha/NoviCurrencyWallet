@@ -2,8 +2,7 @@
 using NoviCurrencyWallet.Core.Contracts;
 using NoviCurrencyWallet.Core.Models.Wallet;
 using Microsoft.AspNetCore.RateLimiting;
-
-
+using NoviCurrencyWallet.Core.Exceptions;
 
 namespace NoviCurrencyWallet.API.Controllers;
 
@@ -24,14 +23,15 @@ public class WalletController : ControllerBase
 	public async Task<ActionResult<GetWalletBalanceDto>> GetWalletBalance(long walletId, string? currency = null)
 	{
 		//IF I CALLED _walletsRepository.GetAsync(id, null);then the overloaded method would still be used
+		GetWalletBalanceDto walletBalanceDto;
 
-		var walletBalanceDto = string.IsNullOrEmpty(currency)
-			? await _walletsRepository.GetAsync<GetWalletBalanceDto>(walletId)
-			: await _walletsRepository.GetAsync(walletId, currency);
-
-		if (walletBalanceDto == null)
+		if (string.IsNullOrEmpty(currency))
 		{
-			return NotFound("Wallet not found.");
+			walletBalanceDto = await _walletsRepository.GetAsync<GetWalletBalanceDto>(walletId);
+		}
+		else
+		{
+			walletBalanceDto = await _walletsRepository.GetAsync(walletId, currency);
 		}
 
 		return Ok(walletBalanceDto);
@@ -42,7 +42,9 @@ public class WalletController : ControllerBase
 	public async Task<ActionResult<GetWalletBalanceDto>> PostWallet(CreateWalletDto createWalletDto)
 	{
 		if (!ModelState.IsValid)
+		{
 			return BadRequest(ModelState);
+		};
 
 		var createdWalletDto = await _walletsRepository.CreateWalletAsync(createWalletDto);
 
@@ -53,8 +55,16 @@ public class WalletController : ControllerBase
 	[HttpPost("{walletId}/adjustbalance")]
 	public async Task<IActionResult> AdjustWalletBalance(long walletId, [FromBody] UpdateWalletBalanceDto updateWalletBalanceDto)
 	{
+		if (walletId != updateWalletBalanceDto.Id)
+		{
+			return BadRequest("Invalid Record Id");
+		}
+
 		await _walletsRepository.AdjustBalance(updateWalletBalanceDto);
 
 		return Ok();
 	}
+
+
+
 }

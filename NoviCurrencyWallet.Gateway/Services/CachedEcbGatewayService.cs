@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using NoviCurrencyWallet.Gateway.Contracts;
 using NoviCurrencyWallet.Gateway.Models;
 
@@ -8,12 +9,14 @@ public class CachedEcbGatewayService : IEcbGatewayService
 {
 	private readonly IEcbGatewayService _innerService;
 	private readonly IMemoryCache _cache;
+	private readonly ILogger<CachedEcbGatewayService> _logger;
 	private readonly TimeSpan _cacheDuration = TimeSpan.FromMinutes(10); // Cache duration
 
-	public CachedEcbGatewayService(IEcbGatewayService innerService, IMemoryCache cache)
+	public CachedEcbGatewayService(IEcbGatewayService innerService, IMemoryCache cache, ILogger<CachedEcbGatewayService> logger)
 	{
 		_innerService = innerService;
 		_cache = cache;
+		_logger = logger;
 	}
 
 	public async Task<EcbCube> GetExchangeRatesAsync()
@@ -23,7 +26,8 @@ public class CachedEcbGatewayService : IEcbGatewayService
 		// Check if cache contains exchange rates
 		if (_cache.TryGetValue(cacheKey, out EcbCube cachedRates))
 		{
-			Console.WriteLine("🟢 Returning exchange rates from cache.");
+			_logger.LogInformation("🔍Returning exchange rates from cache.");
+
 			return cachedRates;
 		}
 
@@ -33,7 +37,8 @@ public class CachedEcbGatewayService : IEcbGatewayService
 		// Store in cache for future use
 		_cache.Set(cacheKey, rates, _cacheDuration);
 
-		Console.WriteLine("🔵 Exchange rates cached successfully.");
+		_logger.LogInformation("🔍Exchange rates cached successfully.");
+
 		return rates;
 	}
 
