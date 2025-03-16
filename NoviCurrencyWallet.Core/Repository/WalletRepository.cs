@@ -17,7 +17,10 @@ public class WalletRepository : GenericRepository<Wallet>, IWalletsRepository
 	private readonly IMapper _mapper;
 	private readonly IEcbGatewayService _ecbGateway;
 	private readonly ILogger<WalletRepository> _logger;
-	public WalletRepository(NoviCurrencyWalletDbContext context, IMapper mapper, IEcbGatewayService ecbGateway, ILogger<WalletRepository> logger) : base(context, mapper)
+	public WalletRepository(
+		NoviCurrencyWalletDbContext context,
+		IMapper mapper, IEcbGatewayService ecbGateway,
+		ILogger<WalletRepository> logger) : base(context, mapper)
 	{
 		_context = context;
 		_mapper = mapper;
@@ -133,8 +136,11 @@ public class WalletRepository : GenericRepository<Wallet>, IWalletsRepository
 		{
 			_logger.LogWarning("Cache is empty, falling back to database.");
 
-			// Load rate from the database instead
-			var dbRate = await _context.CurrencyRates.FirstOrDefaultAsync(r => r.Currency == currency);
+			var dbRate = await _context.CurrencyRates
+				.Where(r => r.Currency == currency)
+				.OrderByDescending(r => r.Date)
+				.FirstOrDefaultAsync();
+
 			if (dbRate == null)
 			{
 				throw new NotFoundException("CurrencyRate", currency);

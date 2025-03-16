@@ -46,8 +46,8 @@ public class RetrieveRatesBackgroundJob : IJob
 			return;  // Stop execution to avoid running an empty SQL query
 		}
 
+		//Open Database Connection
 		var connectionString = _options.NoviCurrencyWalletDbConnectionString;
-
 		using var connection = new SqlConnection(connectionString);           // Establishes a new SQL database connection using the retrieved connection string.
 		await connection.OpenAsync();                                           // Opens the database connection asynchronously.
 

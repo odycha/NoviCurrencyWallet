@@ -19,7 +19,11 @@ public class EcbGatewayService : IEcbGatewayService
 	private readonly TimeSpan _cacheDuration = TimeSpan.FromMinutes(10);
 	private readonly string _cacheKey = "ECB_ExchangeRates";
 
-	public EcbGatewayService(IHttpClientFactory httpClientFactory, IOptions<EcbGatewayOptions> options, ILogger<EcbGatewayService> logger, IMemoryCache cache)
+	public EcbGatewayService(
+		IHttpClientFactory httpClientFactory,
+		IOptions<EcbGatewayOptions> options,
+		ILogger<EcbGatewayService> logger,
+		IMemoryCache cache)
 	{
 		_httpClient = httpClientFactory.CreateClient("EcbClient");
 		_options = options.Value;
@@ -43,7 +47,7 @@ public class EcbGatewayService : IEcbGatewayService
 
 		var objectRates = DeserializeXmlStringToObject(xmlData);
 
-		// Store in cache for future use
+		// Store in cache
 		_cache.Set(_cacheKey, objectRates, _cacheDuration);
 
 		_logger.LogInformation("🔍EcbGatewayService: Exchange rates cached successfully.");
@@ -69,7 +73,6 @@ public class EcbGatewayService : IEcbGatewayService
 		}
 	}
 
-	//does this have to be async?
 	public EcbCube GetCachedExchangeRates()
 	{
 		// Check if cache contains exchange rates
@@ -84,7 +87,6 @@ public class EcbGatewayService : IEcbGatewayService
 			return null;
 		}
 	}
-
 }
 
 
