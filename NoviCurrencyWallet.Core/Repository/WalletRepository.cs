@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.Build.Framework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NoviCurrencyWallet.Core.Contracts;
@@ -44,7 +43,7 @@ public class WalletRepository : GenericRepository<Wallet>, IWalletsRepository
 			Balance = wallet.Balance,
 			Currency = wallet.Currency,
 			ConvertedCurrency = targetCurrency,
-			ConvertedBalance = Math.Round(convertedBalance, 2)
+			ConvertedBalance = convertedBalance
 		};
 
 		return resultDto;
@@ -75,33 +74,33 @@ public class WalletRepository : GenericRepository<Wallet>, IWalletsRepository
 			throw new NotFoundException(nameof(Wallet), updateWalletBalanceDto.Id);
 		}
 
-		decimal ammount = updateWalletBalanceDto.Amount;
+		decimal amount = updateWalletBalanceDto.Amount;
 
 		if (updateWalletBalanceDto.Currency != wallet.Currency)
 		{
 			//convert ammount to the same currency
-			ammount = await ConvertCurrency(updateWalletBalanceDto.Currency, wallet.Currency, ammount);
+			amount = await ConvertCurrency(updateWalletBalanceDto.Currency, wallet.Currency, amount);
 		}
 
 
 		if (updateWalletBalanceDto.Strategy == AdjustmentStrategy.AddFundsStrategy)
 		{
-			wallet.Balance = wallet.Balance + ammount;
+			wallet.Balance = Math.Round(wallet.Balance + amount, 2);
 		}
 		else if (updateWalletBalanceDto.Strategy == AdjustmentStrategy.SubtractFundsStrategy)
 		{
-			if (ammount > wallet.Balance)
+			if (amount > wallet.Balance)
 			{
 				throw new BadRequestException("Insufficient funds for operation");
 			}
 			else
 			{
-				wallet.Balance = wallet.Balance - ammount;
+				wallet.Balance = Math.Round(wallet.Balance - amount, 2);
 			}
 		}
 		else if (updateWalletBalanceDto.Strategy == AdjustmentStrategy.ForceSubtractFundsStrategy)
 		{
-			wallet.Balance = wallet.Balance - ammount;
+			wallet.Balance = Math.Round(wallet.Balance - amount, 2);
 		}
 
 		await UpdateAsync(wallet);
@@ -121,7 +120,7 @@ public class WalletRepository : GenericRepository<Wallet>, IWalletsRepository
 		decimal ammountInEur = ammount / initialRate;
 		decimal convertedAmmount = ammountInEur * targetRate;
 
-		return convertedAmmount;
+		return Math.Round(convertedAmmount, 2);
 	}
 
 	public async Task<decimal> GetCurrencyRate(string currency)
