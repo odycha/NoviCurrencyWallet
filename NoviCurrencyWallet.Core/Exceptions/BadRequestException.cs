@@ -7,3 +7,6 @@ public class BadRequestException : ApplicationException
 
 	}
 }
+
+
+//alternative : ArgumentException or InvalidOperationException

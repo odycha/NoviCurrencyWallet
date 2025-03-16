@@ -31,7 +31,6 @@ public class EcbGatewayService : IEcbGatewayService
 			throw new HttpRequestException($"Failed to fetch exchange rates. Status Code: {response.StatusCode}");
 		}
 
-
 		string xmlData = await response.Content.ReadAsStringAsync();
 
 		_logger.LogInformation("🔍Raw XML Response from ECB:\n{XmlData}", xmlData);

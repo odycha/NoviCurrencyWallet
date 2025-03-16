@@ -18,7 +18,8 @@ public class RetrieveRatesBackgroundJob : IJob
 	private readonly IMemoryCache _cache;
 	private readonly ILogger<RetrieveRatesBackgroundJob> _logger;
 
-	public RetrieveRatesBackgroundJob(IEcbGatewayService gatewayService,
+	public RetrieveRatesBackgroundJob(
+		IEcbGatewayService gatewayService,
 		IOptions<ConnectionStrings> options,
 		IMemoryCache cache,
 		ILogger<RetrieveRatesBackgroundJob> logger)
@@ -84,10 +85,9 @@ public class RetrieveRatesBackgroundJob : IJob
 			command.Parameters.AddRange(parameters.ToArray());
 			await command.ExecuteNonQueryAsync();
 
-			// Invalidate Cache After Updating Database**
-			_cache.Remove("ECB_ExchangeRates");
-
-			_logger.LogInformation("🔍Cache invalidated after updating exchange rates.");
+			//Ensure Immediate Cache Refresh After Database Update
+			_cache.Set("ECB_ExchangeRates", rates, TimeSpan.FromMinutes(10));
+			_logger.LogInformation("🔍 Cache refreshed after updating exchange rates.");
 		}
 		else
 		{

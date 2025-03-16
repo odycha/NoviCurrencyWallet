@@ -1,5 +1,4 @@
-﻿
-namespace NoviCurrencyWallet.Data.Entities;
+﻿namespace NoviCurrencyWallet.Data.Entities;
 
 public class CurrencyRate
 {

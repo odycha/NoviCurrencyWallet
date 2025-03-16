@@ -12,5 +12,5 @@ public interface IWalletsRepository : IGenericRepository<Wallet>
 
 	Task<decimal> ConvertCurrency(string initialCurrency, string targetCurrency, decimal ammount);
 
-
+	Task<decimal> GetCurrencyRate(string currency);
 }

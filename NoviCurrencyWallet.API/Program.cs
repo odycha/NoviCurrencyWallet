@@ -22,10 +22,9 @@ public class Program
 
 		var connectionString = builder.Configuration.GetConnectionString("NoviCurrencyWalletDbConnectionString");
 
-		// Bind the settings classes to appsettings.json (Fix 2: Ensure the right section is used)
+		// Bind the settings classes to appsettings.json
 		builder.Services.Configure<EcbGatewayOptions>(builder.Configuration.GetSection("EcbGateway"));
 		builder.Services.Configure<ConnectionStrings>(builder.Configuration.GetSection("ConnectionStrings"));
-
 
 		//Set up EF and point the database
 		builder.Services.AddDbContext<NoviCurrencyWalletDbContext>(options =>
@@ -33,18 +32,14 @@ public class Program
 			options.UseSqlServer(connectionString);
 		});
 
-
 		// Add services to the container.
 		builder.Services.AddControllers();
 		builder.Services.AddEndpointsApiExplorer();
 		builder.Services.AddSwaggerGen();
-
 		builder.Services.AddAutoMapper(typeof(MapperConfig));
 
 		// Call the job method from the API
-		// Ensure project reference to Jobs project exists
 		builder.Services.AddInfrastructure();
-
 
 		//Register the EcbGatewayService
 		builder.Services.AddHttpClient("EcbClient", client =>
@@ -53,7 +48,6 @@ public class Program
 			client.DefaultRequestHeaders.Add("Accept", "application/xml");
 		});
 		builder.Services.AddScoped<IEcbGatewayService, EcbGatewayService>();
-
 
 		//Cors configuration(1/2)
 		builder.Services.AddCors(options =>
@@ -70,13 +64,11 @@ public class Program
 		//Caching
 		builder.Services.AddMemoryCache();
 
-
 		builder.Services.AddScoped<IEcbGatewayService, EcbGatewayService>();
 		builder.Services.Decorate<IEcbGatewayService, CachedEcbGatewayService>(); // Scrutor required
 
 		builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 		builder.Services.AddScoped<IWalletsRepository, WalletRepository>();
-
 
 		//Rate limiting
 		builder.Services.AddRateLimiter(options =>
@@ -92,9 +84,6 @@ public class Program
 						Window = TimeSpan.FromSeconds(10)
 					}));
 		});
-
-
-
 
 		var app = builder.Build();
 

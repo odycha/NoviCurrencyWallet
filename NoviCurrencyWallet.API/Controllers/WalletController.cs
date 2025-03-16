@@ -17,7 +17,6 @@ public class WalletController : ControllerBase
 	}
 
 
-	//Why ActionResult?
 	[HttpGet("{walletId}")]
 	public async Task<ActionResult<GetWalletBalanceDto>> GetWalletBalance(long walletId, string? currency = null)
 	{
@@ -38,15 +37,16 @@ public class WalletController : ControllerBase
 
 
 	[HttpPost]
-	public async Task<ActionResult<GetWalletBalanceDto>> PostWallet(CreateWalletDto createWalletDto)
+	public async Task<ActionResult<GetWalletBalanceDto>> PostWallet([FromBody] CreateWalletDto createWalletDto)
 	{
-		if (!ModelState.IsValid)
+		if (!ModelState.IsValid) // ensures the incoming request data adheres to the defined model constraints
 		{
 			return BadRequest(ModelState);
 		};
 
 		var createdWalletDto = await _walletsRepository.CreateWalletAsync(createWalletDto);
 
+		//201 Created
 		return CreatedAtAction(nameof(GetWalletBalance), new { walletId = createdWalletDto.Id }, createdWalletDto);
 	}
 
@@ -54,6 +54,11 @@ public class WalletController : ControllerBase
 	[HttpPost("{walletId}/adjustbalance")]
 	public async Task<IActionResult> AdjustWalletBalance(long walletId, [FromBody] UpdateWalletBalanceDto updateWalletBalanceDto)
 	{
+		if (!ModelState.IsValid)
+		{
+			return BadRequest(ModelState);
+		}
+
 		if (walletId != updateWalletBalanceDto.Id)
 		{
 			return BadRequest("Invalid Record Id");
@@ -63,7 +68,4 @@ public class WalletController : ControllerBase
 
 		return Ok();
 	}
-
-
-
 }

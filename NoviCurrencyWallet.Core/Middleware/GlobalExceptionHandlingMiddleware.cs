@@ -55,16 +55,14 @@ public class GlobalExceptionHandlingMiddleware
 		}
 
 		string response = JsonConvert.SerializeObject(errorDetails);
+
+		//HTTP response being sent back to the client - HttpStatusCode is an enum, it needs to be explicitly cast to an integer
 		context.Response.StatusCode = (int)statusCode;
+
 		return context.Response.WriteAsync(response);
 	}
 }
 
-public class ErrorDetails
-{
-	public string ErrorType { get; set; }
-	public string ErrorMessage { get; set; }
-}
 
 
 

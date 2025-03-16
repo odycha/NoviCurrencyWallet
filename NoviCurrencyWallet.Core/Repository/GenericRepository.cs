@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using NoviCurrencyWallet.Core.Contracts;
 using NoviCurrencyWallet.Core.Exceptions;
 using NoviCurrencyWallet.Data;
@@ -8,13 +7,13 @@ namespace NoviCurrencyWallet.Core.Repository;
 
 public class GenericRepository<T> : IGenericRepository<T> where T : class
 {
-    private readonly NoviCurrencyWalletDbContext _context;
-    private readonly IMapper _mapper;
-    public GenericRepository(NoviCurrencyWalletDbContext context, IMapper mapper)
-    {
-        _context = context;
-        _mapper = mapper;
-    }
+	private readonly NoviCurrencyWalletDbContext _context;
+	private readonly IMapper _mapper;
+	public GenericRepository(NoviCurrencyWalletDbContext context, IMapper mapper)
+	{
+		_context = context;
+		_mapper = mapper;
+	}
 
 	public async Task<T> AddAsync(T entity)
 	{
@@ -25,7 +24,8 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
 
 		await _context.Set<T>().AddAsync(entity);
 
-		var changes = await _context.SaveChangesAsync();
+		var changes = await _context.SaveChangesAsync(); //returns int
+
 		if (changes == 0)
 		{
 			throw new Exception("Database operation failed: Entity was not saved.");
@@ -41,7 +41,7 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
 			throw new BadRequestException("ID parameter is required.");
 		}
 
-		var entity = await _context.Set<T>().FindAsync(id);    //??? what is Set<T>
+		var entity = await _context.Set<T>().FindAsync(id); 
 
 		if (entity is null)
 		{

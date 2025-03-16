@@ -6,6 +6,10 @@ using NoviCurrencyWallet.Core.Models.Wallet;
 using NoviCurrencyWallet.Core.Models.Wallet.Enums;
 using NoviCurrencyWallet.Data;
 using NoviCurrencyWallet.Data.Entities;
+using NoviCurrencyWallet.Gateway.Contracts;
+using System.ComponentModel;
+using System.Net.NetworkInformation;
+using System.Reflection.PortableExecutable;
 
 namespace NoviCurrencyWallet.Core.Repository;
 
@@ -13,10 +17,12 @@ public class WalletRepository : GenericRepository<Wallet>, IWalletsRepository
 {
 	private readonly NoviCurrencyWalletDbContext _context;
 	private readonly IMapper _mapper;
-	public WalletRepository(NoviCurrencyWalletDbContext context, IMapper mapper) : base(context, mapper)
+	private readonly IEcbGatewayService _cachedGateway;
+	public WalletRepository(NoviCurrencyWalletDbContext context, IMapper mapper, IEcbGatewayService cachedGateway) : base(context, mapper)
 	{
 		_context = context;
 		_mapper = mapper;
+		_cachedGateway = cachedGateway;
 	}
 
 
@@ -45,6 +51,11 @@ public class WalletRepository : GenericRepository<Wallet>, IWalletsRepository
 
 	public async Task<GetWalletBalanceDto> CreateWalletAsync(CreateWalletDto createWalletDto)
 	{
+		if (createWalletDto == null)
+		{
+			throw new BadRequestException("Wallet creation data cannot be null.");
+		}
+
 		var newWallet = _mapper.Map<Wallet>(createWalletDto);
 
 		var wallet = await AddAsync(newWallet);
@@ -112,18 +123,23 @@ public class WalletRepository : GenericRepository<Wallet>, IWalletsRepository
 		return convertedAmmount;
 	}
 
-	private async Task<decimal> GetCurrencyRate(string currency)
+	public async Task<decimal> GetCurrencyRate(string currency)
 	{
 		if (currency == "EUR") return 1m;
 
-		var currencyRate = await _context.CurrencyRates.FirstOrDefaultAsync(r => r.Currency == currency);
+		var cachedRates = await _cachedGateway.GetExchangeRatesAsync();
+		var currencyRate = cachedRates?.Rates?.FirstOrDefault(r => r.Currency == currency);
+
 		if (currencyRate == null)
 		{
 			throw new NotFoundException("CurrencyRate", currency);
 		}
-
 		return currencyRate.Rate;
 	}
-
 }
 
+
+
+
+//Why Not Use IMemoryCache Directly in WalletRepository?
+//Using IMemoryCache inside WalletRepository is possible, but it violates separation of concerns and makes the repository responsible for caching logic, which isn't its job.

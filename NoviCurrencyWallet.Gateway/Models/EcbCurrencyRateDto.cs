@@ -50,12 +50,6 @@ namespace NoviCurrencyWallet.Gateway.Models
 
 //Ensures inner <Cube> elements are correctly mapped by using Namespace = "" to ignore any nested namespaces.
 
-
-
-
-
-
-
 //Why do we need so many classes?
 //Your EcbCurrencyRateDto is not sufficient on its own because the XML structure is deeply nested within multiple <Cube> 
 //elements. The ECB response is not a flat format; it's hierarchical, meaning you need additional DTOs to match the nesting.
@@ -87,3 +81,4 @@ namespace NoviCurrencyWallet.Gateway.Models
 //Not in a full DateTime format (e.g., missing time component).
 //XmlSerializer might not always recognize it unless explicitly formatted.
 //By using string, we avoid potential deserialization errors and have full control over how to parse the date.
+
