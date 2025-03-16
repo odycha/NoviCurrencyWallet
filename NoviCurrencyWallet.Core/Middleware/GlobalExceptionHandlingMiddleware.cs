@@ -50,6 +50,16 @@ public class GlobalExceptionHandlingMiddleware
 				statusCode = HttpStatusCode.BadRequest;
 				errorDetails.ErrorType = "Bad Request";
 				break;
+			case TaskCanceledException when (ex.InnerException is TimeoutException):
+				statusCode = HttpStatusCode.RequestTimeout;
+				errorDetails.ErrorType = "Timeout";
+				errorDetails.ErrorMessage = "The request to the ECB API timed out.";
+				break;
+			case HttpRequestException:
+				statusCode = HttpStatusCode.ServiceUnavailable;
+				errorDetails.ErrorType = "External Service Failure";
+				errorDetails.ErrorMessage = "Failed to fetch exchange rates from ECB.";
+				break;
 			default:
 				break;
 		}

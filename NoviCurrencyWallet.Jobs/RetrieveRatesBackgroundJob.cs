@@ -1,5 +1,4 @@
 ﻿using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NoviCurrencyWallet.Core.Configurations.Options;
@@ -15,18 +14,15 @@ public class RetrieveRatesBackgroundJob : IJob
 {
 	private readonly IEcbGatewayService _gatewayService;
 	private readonly ConnectionStrings _options;
-	private readonly IMemoryCache _cache;
 	private readonly ILogger<RetrieveRatesBackgroundJob> _logger;
 
 	public RetrieveRatesBackgroundJob(
 		IEcbGatewayService gatewayService,
 		IOptions<ConnectionStrings> options,
-		IMemoryCache cache,
 		ILogger<RetrieveRatesBackgroundJob> logger)
 	{
 		_gatewayService = gatewayService;
 		_options = options.Value;
-		_cache = cache;
 		_logger = logger;
 	}
 
@@ -60,10 +56,12 @@ public class RetrieveRatesBackgroundJob : IJob
         WHEN NOT MATCHED THEN
             INSERT (Currency, Rate, Date) VALUES (source.Currency, source.Rate, source.Date);";
 
+
+		//prevent SQL injection by using parameterized queries instead of directly concatenating user inputs into the SQL query.
 		var valueStrings = new List<string>(); // Stores the dynamically generated VALUES portion of the SQL query.
 		var parameters = new List<SqlParameter>(); // Stores the SQL parameters to prevent SQL injection.
-
 		int index = 0; // Counter for uniquely naming SQL parameters in the loop.
+
 		foreach (var rate in rates.Rates) // Iterates through each currency exchange rate.
 		{
 			var currencyParam = new SqlParameter($"@Currency{index}", SqlDbType.VarChar) { Value = rate.Currency };
@@ -80,6 +78,7 @@ public class RetrieveRatesBackgroundJob : IJob
 		{
 			_logger.LogInformation($"🔍RetrieveRatesBackgroundJob: Preparing to insert/update {valueStrings.Count} currency rates into the database.");
 
+			//Execute SQL Query
 			var finalCommandText = string.Format(commandText, string.Join(", ", valueStrings));
 			using var command = new SqlCommand(finalCommandText, connection);
 			command.Parameters.AddRange(parameters.ToArray());

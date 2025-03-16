@@ -81,7 +81,7 @@ public class WalletRepository : GenericRepository<Wallet>, IWalletsRepository
 
 		if (updateWalletBalanceDto.Currency != wallet.Currency)
 		{
-			//convert ammount to the same currency
+			//convert amount to the same currency
 			amount = await ConvertCurrency(updateWalletBalanceDto.Currency, wallet.Currency, amount);
 		}
 
@@ -110,20 +110,20 @@ public class WalletRepository : GenericRepository<Wallet>, IWalletsRepository
 	}
 
 
-	public async Task<decimal> ConvertCurrency(string initialCurrency, string targetCurrency, decimal ammount)
+	public async Task<decimal> ConvertCurrency(string initialCurrency, string targetCurrency, decimal amount)
 	{
 		if (initialCurrency == targetCurrency)
 		{
-			return ammount;
+			return amount;
 		}
 
 		decimal initialRate = await GetCurrencyRate(initialCurrency);
 		decimal targetRate = await GetCurrencyRate(targetCurrency);
 
-		decimal ammountInEur = ammount / initialRate;
-		decimal convertedAmmount = ammountInEur * targetRate;
+		decimal amountInEur = amount / initialRate;
+		decimal convertedAmount = amountInEur * targetRate;
 
-		return Math.Round(convertedAmmount, 2);
+		return Math.Round(convertedAmount, 2);
 	}
 
 	public async Task<decimal> GetCurrencyRate(string currency)
@@ -145,7 +145,6 @@ public class WalletRepository : GenericRepository<Wallet>, IWalletsRepository
 			{
 				throw new NotFoundException("CurrencyRate", currency);
 			}
-
 			return dbRate.Rate;
 		}
 
@@ -155,6 +154,7 @@ public class WalletRepository : GenericRepository<Wallet>, IWalletsRepository
 		{
 			throw new NotFoundException("CurrencyRate", currency);
 		}
+
 		return currencyRate.Rate;
 	}
 }
