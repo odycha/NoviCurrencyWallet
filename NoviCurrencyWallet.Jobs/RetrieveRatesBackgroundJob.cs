@@ -85,9 +85,6 @@ public class RetrieveRatesBackgroundJob : IJob
 			command.Parameters.AddRange(parameters.ToArray());
 			await command.ExecuteNonQueryAsync();
 
-			//Ensure Immediate Cache Refresh After Database Update
-			_cache.Set("ECB_ExchangeRates", rates, TimeSpan.FromMinutes(10));
-			_logger.LogInformation("🔍 Cache refreshed after updating exchange rates.");
 		}
 		else
 		{

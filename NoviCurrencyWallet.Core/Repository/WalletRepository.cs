@@ -1,4 +1,7 @@
 ﻿using AutoMapper;
+using Microsoft.Build.Framework;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using NoviCurrencyWallet.Core.Contracts;
 using NoviCurrencyWallet.Core.Exceptions;
 using NoviCurrencyWallet.Core.Models.Wallet;
@@ -13,12 +16,14 @@ public class WalletRepository : GenericRepository<Wallet>, IWalletsRepository
 {
 	private readonly NoviCurrencyWalletDbContext _context;
 	private readonly IMapper _mapper;
-	private readonly IEcbGatewayService _cachedGateway;
-	public WalletRepository(NoviCurrencyWalletDbContext context, IMapper mapper, IEcbGatewayService cachedGateway) : base(context, mapper)
+	private readonly IEcbGatewayService _ecbGateway;
+	private readonly ILogger<WalletRepository> _logger;
+	public WalletRepository(NoviCurrencyWalletDbContext context, IMapper mapper, IEcbGatewayService ecbGateway, ILogger<WalletRepository> logger) : base(context, mapper)
 	{
 		_context = context;
 		_mapper = mapper;
-		_cachedGateway = cachedGateway;
+		_ecbGateway = ecbGateway;
+		_logger = logger;
 	}
 
 
@@ -123,7 +128,22 @@ public class WalletRepository : GenericRepository<Wallet>, IWalletsRepository
 	{
 		if (currency == "EUR") return 1m;
 
-		var cachedRates = await _cachedGateway.GetExchangeRatesAsync();
+		var cachedRates = await _ecbGateway.GetCachedExchangeRatesAsync();
+
+		if (cachedRates == null)
+		{
+			_logger.LogWarning("Cache is empty, falling back to database.");
+
+			// Load rate from the database instead
+			var dbRate = await _context.CurrencyRates.FirstOrDefaultAsync(r => r.Currency == currency);
+			if (dbRate == null)
+			{
+				throw new NotFoundException("CurrencyRate", currency);
+			}
+
+			return dbRate.Rate;
+		}
+
 		var currencyRate = cachedRates?.Rates?.FirstOrDefault(r => r.Currency == currency);
 
 		if (currencyRate == null)

@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using System.Xml.Serialization;
 using System.Xml;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace NoviCurrencyWallet.Gateway.Services;
 
@@ -14,11 +15,16 @@ public class EcbGatewayService : IEcbGatewayService
 	private readonly HttpClient _httpClient;
 	private readonly EcbGatewayOptions _options;
 	private readonly ILogger<EcbGatewayService> _logger;
-	public EcbGatewayService(IHttpClientFactory httpClientFactory, IOptions<EcbGatewayOptions> options, ILogger<EcbGatewayService> logger)
+	private readonly IMemoryCache _cache;
+	private readonly TimeSpan _cacheDuration = TimeSpan.FromMinutes(10);
+	private readonly string _cacheKey = "ECB_ExchangeRates";
+
+	public EcbGatewayService(IHttpClientFactory httpClientFactory, IOptions<EcbGatewayOptions> options, ILogger<EcbGatewayService> logger, IMemoryCache cache)
 	{
 		_httpClient = httpClientFactory.CreateClient("EcbClient");
 		_options = options.Value;
 		_logger = logger;
+		_cache = cache;
 	}
 
 	public async Task<EcbCube> GetExchangeRatesAsync()
@@ -35,7 +41,14 @@ public class EcbGatewayService : IEcbGatewayService
 
 		_logger.LogInformation("🔍Raw XML Response from ECB:\n{XmlData}", xmlData);
 
-		return DeserializeXmlStringToObject(xmlData);
+		var objectRates = DeserializeXmlStringToObject(xmlData);
+
+		// Store in cache for future use
+		_cache.Set(_cacheKey, objectRates, _cacheDuration);
+
+		_logger.LogInformation("🔍Exchange rates cached successfully.");
+
+		return objectRates;
 	}
 
 	public EcbCube DeserializeXmlStringToObject(string xmlData)
@@ -53,6 +66,22 @@ public class EcbGatewayService : IEcbGatewayService
 		{
 			var envelope = (EcbEnvelope)serializer.Deserialize(xmlReader);
 			return envelope?.CubeContainer?.DateCube;
+		}
+	}
+
+	//does this have to be async?
+	public async Task<EcbCube> GetCachedExchangeRatesAsync()
+	{
+		// Check if cache contains exchange rates
+		if (_cache.TryGetValue(_cacheKey, out EcbCube cachedRates))
+		{
+			_logger.LogInformation("🔍Returning exchange rates from cache.");
+
+			return cachedRates;
+		}
+		else
+		{
+			return null;
 		}
 	}
 

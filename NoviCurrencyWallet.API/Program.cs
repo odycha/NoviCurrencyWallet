@@ -65,7 +65,7 @@ public class Program
 		builder.Services.AddMemoryCache();
 
 		builder.Services.AddScoped<IEcbGatewayService, EcbGatewayService>();
-		builder.Services.Decorate<IEcbGatewayService, CachedEcbGatewayService>(); // Scrutor required
+		//builder.Services.Decorate<IEcbGatewayService, CachedEcbGatewayService>(); // Scrutor required
 
 		builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 		builder.Services.AddScoped<IWalletsRepository, WalletRepository>();
