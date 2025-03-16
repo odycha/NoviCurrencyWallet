@@ -44,7 +44,7 @@ public class WalletRepository : GenericRepository<Wallet>, IWalletsRepository
 			Balance = wallet.Balance,
 			Currency = wallet.Currency,
 			ConvertedCurrency = targetCurrency,
-			ConvertedBalance = convertedBalance
+			ConvertedBalance = Math.Round(convertedBalance, 2)
 		};
 
 		return resultDto;
@@ -128,7 +128,7 @@ public class WalletRepository : GenericRepository<Wallet>, IWalletsRepository
 	{
 		if (currency == "EUR") return 1m;
 
-		var cachedRates = await _ecbGateway.GetCachedExchangeRatesAsync();
+		var cachedRates = _ecbGateway.GetCachedExchangeRates();
 
 		if (cachedRates == null)
 		{

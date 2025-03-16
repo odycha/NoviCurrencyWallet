@@ -7,5 +7,5 @@ public interface IEcbGatewayService
 	//IN INTERFACES METHODS NO ACCESS MODIFIER
 	Task<EcbCube> GetExchangeRatesAsync();
 	EcbCube DeserializeXmlStringToObject(string xmlData);
-	Task<EcbCube> GetCachedExchangeRatesAsync();
+	EcbCube GetCachedExchangeRates();
 }

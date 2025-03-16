@@ -34,19 +34,19 @@ public class EcbGatewayService : IEcbGatewayService
 
 		if (!response.IsSuccessStatusCode)
 		{
-			throw new HttpRequestException($"Failed to fetch exchange rates. Status Code: {response.StatusCode}");
+			throw new HttpRequestException($"EcbGatewayService: Failed to fetch exchange rates. Status Code: {response.StatusCode}");
 		}
 
 		string xmlData = await response.Content.ReadAsStringAsync();
 
-		_logger.LogInformation("🔍Raw XML Response from ECB:\n{XmlData}", xmlData);
+		_logger.LogInformation("🔍EcbGatewayService: Raw XML Response from ECB:\n{XmlData}", xmlData);
 
 		var objectRates = DeserializeXmlStringToObject(xmlData);
 
 		// Store in cache for future use
 		_cache.Set(_cacheKey, objectRates, _cacheDuration);
 
-		_logger.LogInformation("🔍Exchange rates cached successfully.");
+		_logger.LogInformation("🔍EcbGatewayService: Exchange rates cached successfully.");
 
 		return objectRates;
 	}
@@ -70,12 +70,12 @@ public class EcbGatewayService : IEcbGatewayService
 	}
 
 	//does this have to be async?
-	public async Task<EcbCube> GetCachedExchangeRatesAsync()
+	public EcbCube GetCachedExchangeRates()
 	{
 		// Check if cache contains exchange rates
 		if (_cache.TryGetValue(_cacheKey, out EcbCube cachedRates))
 		{
-			_logger.LogInformation("🔍Returning exchange rates from cache.");
+			_logger.LogInformation("🔍EcbGatewayService: Returning exchange rates from cache.");
 
 			return cachedRates;
 		}

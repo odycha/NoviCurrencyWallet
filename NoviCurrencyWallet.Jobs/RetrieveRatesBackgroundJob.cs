@@ -36,12 +36,12 @@ public class RetrieveRatesBackgroundJob : IJob
 
 		var rates = await _gatewayService.GetExchangeRatesAsync();
 
-		_logger.LogInformation($"🔍Fetched {rates?.Rates?.Count ?? 0} exchange rates.");
+		_logger.LogInformation($"🔍RetrieveRatesBackgroundJob: Fetched {rates?.Rates?.Count ?? 0} exchange rates.");
 
 		// If rates are empty, log an error
 		if (rates == null || rates.Rates == null || rates.Rates.Count == 0)
 		{
-			_logger.LogInformation("🔍No exchange rates received from ECB API!");
+			_logger.LogInformation("🔍RetrieveRatesBackgroundJob: No exchange rates received from ECB API!");
 
 			return;  // Stop execution to avoid running an empty SQL query
 		}
@@ -78,7 +78,7 @@ public class RetrieveRatesBackgroundJob : IJob
 
 		if (valueStrings.Count > 0)
 		{
-			_logger.LogInformation($"🔍Preparing to insert/update {valueStrings.Count} currency rates into the database.");
+			_logger.LogInformation($"🔍RetrieveRatesBackgroundJob: Preparing to insert/update {valueStrings.Count} currency rates into the database.");
 
 			var finalCommandText = string.Format(commandText, string.Join(", ", valueStrings));
 			using var command = new SqlCommand(finalCommandText, connection);
@@ -88,7 +88,7 @@ public class RetrieveRatesBackgroundJob : IJob
 		}
 		else
 		{
-			_logger.LogInformation("🔍No valid exchange rate data to insert/update.");
+			_logger.LogInformation("🔍RetrieveRatesBackgroundJob: No valid exchange rate data to insert/update.");
 		}
 	}
 }
