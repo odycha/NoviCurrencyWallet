@@ -10,7 +10,7 @@ public class CachedEcbGatewayService : IEcbGatewayService
 	private readonly IEcbGatewayService _innerService;
 	private readonly IMemoryCache _cache;
 	private readonly ILogger<CachedEcbGatewayService> _logger;
-	private readonly TimeSpan _cacheDuration = TimeSpan.FromMinutes(10); // Cache duration
+	private readonly TimeSpan _cacheDuration = TimeSpan.FromSeconds(59); // Cache duration
 
 	public CachedEcbGatewayService(IEcbGatewayService innerService, IMemoryCache cache, ILogger<CachedEcbGatewayService> logger)
 	{

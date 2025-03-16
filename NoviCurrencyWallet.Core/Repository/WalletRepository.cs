@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
 using NoviCurrencyWallet.Core.Contracts;
 using NoviCurrencyWallet.Core.Exceptions;
 using NoviCurrencyWallet.Core.Models.Wallet;
@@ -7,9 +6,6 @@ using NoviCurrencyWallet.Core.Models.Wallet.Enums;
 using NoviCurrencyWallet.Data;
 using NoviCurrencyWallet.Data.Entities;
 using NoviCurrencyWallet.Gateway.Contracts;
-using System.ComponentModel;
-using System.Net.NetworkInformation;
-using System.Reflection.PortableExecutable;
 
 namespace NoviCurrencyWallet.Core.Repository;
 
@@ -76,20 +72,20 @@ public class WalletRepository : GenericRepository<Wallet>, IWalletsRepository
 
 		decimal ammount = updateWalletBalanceDto.Amount;
 
-		if(updateWalletBalanceDto.Currency != wallet.Currency)
+		if (updateWalletBalanceDto.Currency != wallet.Currency)
 		{
 			//convert ammount to the same currency
 			ammount = await ConvertCurrency(updateWalletBalanceDto.Currency, wallet.Currency, ammount);
 		}
 
 
-		if(updateWalletBalanceDto.Strategy == AdjustmentStrategy.AddFundsStrategy)
+		if (updateWalletBalanceDto.Strategy == AdjustmentStrategy.AddFundsStrategy)
 		{
 			wallet.Balance = wallet.Balance + ammount;
 		}
-		else if(updateWalletBalanceDto.Strategy == AdjustmentStrategy.SubtractFundsStrategy)
+		else if (updateWalletBalanceDto.Strategy == AdjustmentStrategy.SubtractFundsStrategy)
 		{
-			if(ammount > wallet.Balance)
+			if (ammount > wallet.Balance)
 			{
 				throw new BadRequestException("Insufficient funds for operation");
 			}
@@ -98,7 +94,7 @@ public class WalletRepository : GenericRepository<Wallet>, IWalletsRepository
 				wallet.Balance = wallet.Balance - ammount;
 			}
 		}
-		else if(updateWalletBalanceDto.Strategy == AdjustmentStrategy.ForceSubtractFundsStrategy)
+		else if (updateWalletBalanceDto.Strategy == AdjustmentStrategy.ForceSubtractFundsStrategy)
 		{
 			wallet.Balance = wallet.Balance - ammount;
 		}
@@ -109,7 +105,7 @@ public class WalletRepository : GenericRepository<Wallet>, IWalletsRepository
 
 	public async Task<decimal> ConvertCurrency(string initialCurrency, string targetCurrency, decimal ammount)
 	{
-		if(initialCurrency == targetCurrency)
+		if (initialCurrency == targetCurrency)
 		{
 			return ammount;
 		}
